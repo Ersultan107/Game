@@ -3,96 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEON SENSE: IMMERSIVE</title>
+    <title>Neural Maze</title>
     <style>
-        :root { 
-            --neon: #00f3ff; 
-            --bg: #020205; 
-            --danger: #ff0055; 
-            --accent: #bc13fe;
+        :root {
+            --primary: #ff4d94;
+            --bg: #0a0510;
         }
         
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: var(--bg); overflow: hidden; touch-action: none; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
         }
 
-        /* Эффект погружения - виньетка */
-        body::after {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
-            pointer-events: none; z-index: 5;
+        .bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 30%, #1a0820 0%, #0a0510 80%);
+            z-index: 0;
         }
 
-        canvas { display: block; z-index: 1; }
-        
-        /* Интерфейс */
         #ui { 
-            position: absolute; top: 40px; width: 100%; text-align: center; 
-            color: var(--neon); letter-spacing: 5px; z-index: 10; 
-            font-weight: 200; text-shadow: 0 0 15px var(--neon);
-            text-transform: uppercase; font-size: 12px;
+            position: absolute; top: 50px; width: 100%; text-align: center; 
+            color: white; opacity: 0.4; font-weight: 200; letter-spacing: 4px;
+            z-index: 10; font-size: 11px; text-transform: uppercase;
         }
         
-        /* Стеклянный джойстик */
         #joy-outer { 
             position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
-            width: 110px; height: 110px; border: 1px solid rgba(0, 243, 255, 0.15); 
-            border-radius: 50%; background: rgba(255,255,255,0.02); 
+            width: 100px; height: 100px; border-radius: 50%; 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(10px); z-index: 10;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
         #joy-stick { 
-            position: absolute; top: 30px; left: 30px; width: 50px; height: 50px; 
-            background: linear-gradient(135deg, #fff, var(--neon)); 
-            border-radius: 50%; box-shadow: 0 0 25px var(--neon);
+            position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; 
+            background: white; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
         
-        /* Стартовый экран */
         #start-screen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--bg); z-index: 100; display: flex; 
             flex-direction: column; align-items: center; justify-content: center; 
-            color: white; text-align: center; transition: 0.8s ease;
+            transition: 0.5s ease;
         }
 
-        .title { font-size: 32px; font-weight: 100; letter-spacing: 15px; margin-bottom: 10px; }
-        .title span { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
+        h1 { color: white; font-size: 24px; font-weight: 200; letter-spacing: 8px; margin-bottom: 10px; text-transform: uppercase; }
+        .sub { color: var(--primary); font-size: 10px; letter-spacing: 3px; margin-bottom: 50px; opacity: 0.8; }
 
-        .start-btn { 
-            padding: 18px 50px; background: transparent; 
-            border: 1px solid rgba(0, 243, 255, 0.4); color: white; 
-            cursor: pointer; text-transform: uppercase; font-weight: 300; 
-            margin-top: 40px; letter-spacing: 4px; transition: 0.3s;
-            backdrop-filter: blur(5px);
+        .btn-start { 
+            padding: 16px 50px; background: white; border: none; border-radius: 2px;
+            color: black; font-size: 14px; font-weight: bold; cursor: pointer;
+            letter-spacing: 2px; text-transform: uppercase;
         }
-        .start-btn:active { background: var(--neon); color: black; box-shadow: 0 0 30px var(--neon); }
 
-        /* Скример */
         #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
         #screamer img { width: 130%; height: 130%; object-fit: cover; position: absolute; top: -15%; left: -15%; }
         
-        .shake-active { animation: ultimate-shake 0.08s infinite; }
-        @keyframes ultimate-shake {
-            0% { transform: translate(0,0) scale(1); }
-            50% { transform: translate(-15px, 15px) scale(1.05); }
-            100% { transform: translate(15px, -15px) scale(1); }
-        }
+        .shake { animation: sh 0.06s infinite; }
+        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-15px, 15px)} 100% {transform: translate(15px, -15px)} }
     </style>
 </head>
 <body>
 
-<div id="ui">Sync Path: <span id="lvl">1</span> / 3</div>
+<div class="bg-glow"></div>
+<div id="ui">Node: <span id="lvl">1</span> / 5</div>
 
 <div id="start-screen">
-    <div class="title">NEON<span>SENSE</span></div>
-    <div style="opacity: 0.4; font-size: 10px; letter-spacing: 2px;">VIRTUAL CALIBRATION SYSTEM</div>
-    <div style="color: var(--danger); font-size: 11px; margin-top: 40px; letter-spacing: 1px;">⚠️ ВНИМАНИЕ: НЕ КАСАЙТЕСЬ ГРАНИЦ ⚠️</div>
-    <button class="start-btn" id="goBtn">Инициализация</button>
+    <h1>Neural Link</h1>
+    <div class="sub">System Calibration</div>
+    <button class="btn-start" onclick="initGame()">Connect</button>
 </div>
 
-<canvas id="game"></canvas>
+<canvas id="stage"></canvas>
 <div id="joy-outer"><div id="joy-stick"></div></div>
 <div id="screamer"><img src="77307.jpg"></div>
 
@@ -100,44 +81,42 @@
 <audio id="scm" src="scream.mp3"></audio>
 
 <script>
-    const canvas = document.getElementById('game'), ctx = canvas.getContext('2d');
+    const cvs = document.getElementById('stage'), ctx = cvs.getContext('2d');
     const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
-    const joyStick = document.getElementById('joy-stick');
+    const stick = document.getElementById('joy-stick');
     
-    let level = 1, cellSize, offX, offY, gameActive = false;
-    let player = { x: 0, y: 0, r: 7 };
-    let finish = { x: 0, y: 0 };
-    let walls = [], joy = { x: 0, y: 0, active: false };
+    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:7}, finish = {x:0, y:0};
+    let joy = {x:0, y:0, active:false}, cellSize;
 
     const maps = [
-        [[1,1,1,1,1,1,1,1],[1,2,0,0,0,0,3,1],[1,1,1,1,1,1,1,1]],
-        [[1,1,1,1,1,1,1],[1,2,0,1,1,1,1],[1,1,0,0,0,3,1],[1,1,1,1,1,1,1]],
-        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,0,1,0,0,0,0,1],[1,1,1,0,1,0,1,1,0,1],[1,0,0,0,0,0,1,3,0,1],[1,1,1,1,1,1,1,1,1,1]]
+        [[1,1,1,1,1,1,1],[1,2,0,0,0,3,1],[1,1,1,1,1,1,1]],
+        [[1,1,1,1,1,1,1],[1,2,0,1,0,3,1],[1,1,0,1,0,1,1],[1,1,0,0,0,1,1],[1,1,1,1,1,1,1]],
+        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,0,0,1,0,0,0,1],[1,1,1,1,0,1,0,1,0,1],[1,0,0,0,0,0,0,1,3,1],[1,1,1,1,1,1,1,1,1,1]]
     ];
 
-    document.getElementById('goBtn').addEventListener('click', function() {
-        bgm.play(); scm.load();
+    function initGame() {
+        bgm.play().catch(()=>{}); scm.load();
         document.getElementById('start-screen').style.opacity = '0';
         setTimeout(() => {
             document.getElementById('start-screen').style.display = 'none';
             gameActive = true;
-            init();
-            loop();
-        }, 800);
-    });
+            setupLevel();
+            requestAnimationFrame(update);
+        }, 500);
+    }
 
-    function init() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const m = maps[level-1];
-        cellSize = Math.min(canvas.width / (m[0].length + 1), canvas.height / (m.length + 5));
+    function setupLevel() {
+        cvs.width = window.innerWidth;
+        cvs.height = window.innerHeight;
+        const m = maps[Math.min(level-1, maps.length-1)];
+        cellSize = Math.min(cvs.width / (m[0].length + 1), cvs.height / (m.length + 6));
         walls = [];
-        offX = (canvas.width - m[0].length * cellSize) / 2;
-        offY = (canvas.height - m.length * cellSize) / 2.2;
+        let ox = (cvs.width - m[0].length * cellSize) / 2;
+        let oy = (cvs.height - m.length * cellSize) / 2;
 
         for(let y=0; y<m.length; y++) {
             for(let x=0; x<m[y].length; x++) {
-                let px = offX + x * cellSize, py = offY + y * cellSize;
+                let px = ox + x * cellSize, py = oy + y * cellSize;
                 if(m[y][x] === 1) walls.push({x: px, y: py, w: cellSize, h: cellSize});
                 if(m[y][x] === 2) { player.x = px + cellSize/2; player.y = py + cellSize/2; }
                 if(m[y][x] === 3) { finish.x = px + cellSize/2; finish.y = py + cellSize/2; }
@@ -145,95 +124,74 @@
         }
     }
 
-    // Управление
     window.addEventListener('touchstart', e => { 
-        const t = e.touches[0], r = document.getElementById('joy-outer').getBoundingClientRect();
-        if(Math.hypot(t.clientX - (r.left+55), t.clientY - (r.top+55)) < 70) joy.active = true;
+        const r = document.getElementById('joy-outer').getBoundingClientRect();
+        const t = e.touches[0];
+        if(Math.hypot(t.clientX - (r.left+50), t.clientY - (r.top+50)) < 60) joy.active = true;
     });
 
     window.addEventListener('touchmove', e => {
         if(!joy.active) return;
-        const t = e.touches[0], r = document.getElementById('joy-outer').getBoundingClientRect();
-        let dx = t.clientX - (r.left+55), dy = t.clientY - (r.top+55);
-        const d = Math.hypot(dx, dy);
-        if(d > 40) { dx *= 40/d; dy *= 40/d; }
-        joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 18; joy.y = dy / 18; // Плавное, вязкое управление
+        const r = document.getElementById('joy-outer').getBoundingClientRect();
+        const t = e.touches[0];
+        let dx = t.clientX - (r.left+50), dy = t.clientY - (r.top+50);
+        const dist = Math.hypot(dx, dy);
+        if(dist > 35) { dx *= 35/dist; dy *= 35/dist; }
+        stick.style.transform = `translate(${dx}px, ${dy}px)`;
+        joy.x = dx / 16; joy.y = dy / 16;
     });
 
-    window.addEventListener('touchend', () => { 
-        joy.active = false; joy.x = 0; joy.y = 0; 
-        joyStick.style.transform = 'translate(0,0)'; 
-    });
+    window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; stick.style.transform = 'translate(0,0)'; });
 
-    function drawGrid() {
-        ctx.strokeStyle = 'rgba(0, 243, 255, 0.03)';
-        ctx.lineWidth = 1;
-        for(let i=0; i<canvas.width; i+=30) {
-            ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke();
-        }
-        for(let i=0; i<canvas.height; i+=30) {
-            ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke();
-        }
-    }
-
-    function loop() {
+    function update() {
         if(!gameActive) return;
         
         if(joy.active) {
-            player.x += joy.x; player.y += joy.y;
-            walls.forEach(w => {
-                if(player.x+player.r > w.x && player.x-player.r < w.x+w.w && 
-                   player.y+player.r > w.y && player.y-player.r < w.y+w.h) triggerScreamer();
-            });
+            player.x += joy.x;
+            player.y += joy.y;
+            
+            for(let w of walls) {
+                if(player.x+player.r-2 > w.x && player.x-player.r+2 < w.x+w.w && 
+                   player.y+player.r-2 > w.y && player.y-player.r+2 < w.y+w.h) {
+                    gameOver(); return;
+                }
+            }
         }
 
-        ctx.fillStyle = varColor('--bg');
-        ctx.fillRect(0,0,canvas.width, canvas.height);
-        
-        drawGrid();
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-        // Стены
         walls.forEach(w => {
-            // Внешнее свечение стен
-            ctx.shadowBlur = 5; ctx.shadowColor = 'rgba(0, 243, 255, 0.2)';
-            ctx.strokeStyle = 'rgba(0, 243, 255, 0.1)';
-            ctx.strokeRect(w.x, w.y, w.w, w.h);
-            
-            // Внутренний блик
-            ctx.fillStyle = 'rgba(0, 243, 255, 0.02)';
-            ctx.fillRect(w.x+1, w.y+1, w.w-2, w.h-2);
+            ctx.strokeStyle = 'rgba(255, 77, 148, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(w.x+5, w.y+5, w.w-10, w.h-10);
         });
 
-        // Финиш (Пульсирующий)
-        const pulse = 10 + Math.sin(Date.now()/200) * 5;
-        ctx.shadowBlur = pulse; ctx.shadowColor = '#ff00ff';
-        ctx.fillStyle = '#ff00ff';
-        ctx.beginPath(); ctx.arc(finish.x, finish.y, cellSize/5, 0, Math.PI*2); ctx.fill();
+        // Finish
+        ctx.fillStyle = '#ff4d94';
+        ctx.shadowBlur = 15; ctx.shadowColor = '#ff4d94';
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, 8, 0, Math.PI*2); ctx.fill();
 
-        // Игрок
-        ctx.shadowBlur = 15; ctx.shadowColor = varColor('--neon');
-        ctx.fillStyle = '#fff';
+        // Player
+        ctx.fillStyle = 'white';
+        ctx.shadowBlur = 10; ctx.shadowColor = 'white';
         ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill();
         ctx.shadowBlur = 0;
 
         if(Math.hypot(player.x - finish.x, player.y - finish.y) < 15) {
-            if(level < 3) { level++; document.getElementById('lvl').innerText = level; init(); } 
-            else { triggerScreamer(); }
+            if(level < 5) { level++; document.getElementById('lvl').innerText = level; setupLevel(); }
+            else { gameOver(); }
         }
-        requestAnimationFrame(loop);
+        requestAnimationFrame(update);
     }
 
-    function varColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name); }
-
-    function triggerScreamer() {
+    function gameOver() {
         if(!gameActive) return;
         gameActive = false;
         bgm.pause(); scm.play();
         const sc = document.getElementById('screamer');
         sc.style.display = 'block';
-        sc.classList.add('shake-active');
-        if(navigator.vibrate) navigator.vibrate([800, 200, 800]);
+        sc.classList.add('shake');
+        if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
     }
 </script>
 </body>
