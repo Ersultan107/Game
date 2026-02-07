@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neural Maze</title>
+    <title>Neural Link</title>
     <style>
         :root { --primary: #ff4d94; --bg: #0a0510; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; font-family: 'Segoe UI', sans-serif; }
         canvas { display: block; position: absolute; top: 0; left: 0; z-index: 2; }
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 30%, #1a0820 0%, #0a0510 80%); z-index: 1; }
-        #ui { position: absolute; top: 40px; width: 100%; text-align: center; color: white; opacity: 0.6; letter-spacing: 3px; z-index: 10; font-family: sans-serif; font-size: 12px; }
-        #joy-outer { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); z-index: 10; }
-        #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 15px var(--primary); }
+        #ui { position: absolute; top: 40px; width: 100%; text-align: center; color: #00f3ff; opacity: 0.7; letter-spacing: 4px; z-index: 10; font-size: 13px; text-transform: uppercase; }
+        #joy-outer { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); z-index: 10; display: flex; align-items: center; justify-content: center; }
+        #joy-stick { width: 55px; height: 55px; background: white; border-radius: 50%; box-shadow: 0 0 25px var(--primary); transition: transform 0.1s linear; }
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-start { padding: 15px 50px; background: white; border: none; border-radius: 5px; color: black; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-start { padding: 16px 60px; background: white; border: none; border-radius: 4px; color: black; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; }
         #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
         #screamer img { width: 150%; height: 150%; object-fit: cover; position: absolute; top: -25%; left: -25%; }
         .shake { animation: sh 0.04s infinite; }
-        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-25px, 25px)} 100% {transform: translate(25px, -25px)} }
+        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-30px, 30px)} 100% {transform: translate(30px, -30px)} }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
-<div id="ui">NEURAL LINK: NODE <span id="lvl">1</span> / 3</div>
+<div id="ui">NEURAL LINK: NODE <span id="lvl">1</span> / 5</div>
 <div id="start-screen">
-    <h1 style="color:white; font-weight:100; letter-spacing:8px;">SYSTEM CHECK</h1>
-    <button class="btn-start" onclick="initGame()">Start</button>
+    <h1 style="color:white; font-weight:100; letter-spacing:10px; margin-bottom:50px; text-align:center;">SYSTEM INITIALIZED</h1>
+    <button class="btn-start" onclick="initGame()">Start Link</button>
 </div>
 <canvas id="stage"></canvas>
 <div id="joy-outer"><div id="joy-stick"></div></div>
@@ -37,25 +37,23 @@
     const cvs = document.getElementById('stage'), ctx = cvs.getContext('2d');
     const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
     const stick = document.getElementById('joy-stick');
-    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:6}, finish = {x:0, y:0}, joy = {x:0, y:0, active:false}, cellSize;
+    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:8}, finish = {x:0, y:0}, joy = {x:0, y:0, active:false}, cellSize;
 
-    // Карты 10x10. 1-стена, 2-старт, 3-финиш
     const maps = [
-        // Уровень 1: Безопасный и простой
-        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,0,0,0,0,0,3,1],[1,1,1,1,1,1,1,1,1,1]],
-        // Уровень 2: Безопасный, но длиннее
-        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,1,0,0,1,0,0,1],[1,0,0,1,0,0,1,0,3,1],[1,1,1,1,1,1,1,1,1,1]],
-        // Уровень 3: ЛОВУШКА! Реальный лабиринт 10x10
+        [[1,1,1,1,1],[1,2,0,3,1],[1,1,1,1,1]], // Уровень 1
+        [[1,1,1,1,1,1,1],[1,2,0,0,0,3,1],[1,1,1,1,1,1,1]], // Уровень 2
+        [[1,1,1,1,1,1,1,1,1],[1,2,0,0,1,0,0,3,1],[1,1,1,0,1,0,1,1,1],[1,1,1,1,1,1,1,1,1]], // Уровень 3
+        // Уровень 4 - ИДЕАЛЬНЫЙ ЛАБИРИНТ (ЛОГОВО СКРИМЕРА)
         [
-            [1,1,1,1,1,1,1,1,1,1],
-            [1,2,0,0,1,0,0,0,0,1],
-            [1,1,1,0,1,0,1,1,0,1],
-            [1,0,0,0,0,0,1,0,0,1],
-            [1,0,1,1,1,1,1,0,1,1],
-            [1,0,0,0,1,0,0,0,0,1],
-            [1,1,1,0,1,0,1,1,0,1],
-            [1,0,0,0,0,0,1,3,0,1],
-            [1,1,1,1,1,1,1,1,1,1]
+            [1,1,1,1,1,1,1,1,1,1,1],
+            [1,2,0,0,0,0,1,0,0,0,1],
+            [1,1,1,1,1,0,1,0,1,0,1],
+            [1,0,0,0,0,0,1,0,1,0,1],
+            [1,0,1,1,1,1,1,0,1,0,1],
+            [1,0,0,0,1,0,0,0,1,0,1],
+            [1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,3,1],
+            [1,1,1,1,1,1,1,1,1,1,1]
         ]
     ];
 
@@ -68,7 +66,7 @@
     function setupLevel() {
         cvs.width = window.innerWidth; cvs.height = window.innerHeight;
         const m = maps[Math.min(level-1, maps.length-1)];
-        cellSize = Math.floor(Math.min(cvs.width / (m[0].length + 1), cvs.height / 12));
+        cellSize = Math.floor(Math.min(cvs.width / (m[0].length + 1), cvs.height / 10));
         walls = [];
         let ox = (cvs.width - m[0].length * cellSize) / 2;
         let oy = (cvs.height - m.length * cellSize) / 2.5;
@@ -88,47 +86,53 @@
         if(!joy.active) return;
         const r = document.getElementById('joy-outer').getBoundingClientRect();
         const t = e.touches[0];
-        let dx = t.clientX - (r.left+50), dy = t.clientY - (r.top+50);
+        let dx = t.clientX - (r.left + 55), dy = t.clientY - (r.top + 55);
         const dist = Math.hypot(dx, dy);
-        if(dist > 35) { dx *= 35/dist; dy *= 35/dist; }
+        if(dist > 40) { dx *= 40/dist; dy *= 40/dist; }
         stick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 12; joy.y = dy / 12;
+        joy.x = dx / 10; joy.y = dy / 10;
     });
     window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; stick.style.transform = 'translate(0,0)'; });
 
     function loop() {
         if(!gameActive) return;
-        player.x += joy.x; player.y += joy.y;
 
-        // ЛОВУШКА: Проверка стен только на 3 уровне
-        if(level === 3) {
-            for(let w of walls) {
-                if(player.x+3 > w.x && player.x-3 < w.x+w.w && player.y+3 > w.y && player.y-3 < w.y+w.h) {
-                    gameOver(); return;
-                }
+        let nextX = player.x + joy.x;
+        let nextY = player.y + joy.y;
+        let collision = false;
+
+        for(let w of walls) {
+            if(nextX + player.r > w.x && nextX - player.r < w.x + w.w &&
+               nextY + player.r > w.y && nextY - player.r < w.y + w.h) {
+                collision = true;
+                if(level === 4) { gameOver(); return; } // Смерть только на 4 уровне
+                break;
             }
         }
 
+        if(!collision) { player.x = nextX; player.y = nextY; }
+
         ctx.clearRect(0, 0, cvs.width, cvs.height);
         walls.forEach(w => {
-            ctx.strokeStyle = 'rgba(255, 77, 148, 0.3)';
+            ctx.strokeStyle = 'rgba(255, 77, 148, 0.4)';
+            ctx.lineWidth = 1.5;
             ctx.strokeRect(w.x+2, w.y+2, w.w-4, w.h-4);
         });
 
         // Финиш
         ctx.fillStyle = '#ff4d94';
         ctx.shadowBlur = 15; ctx.shadowColor = '#ff4d94';
-        ctx.beginPath(); ctx.arc(finish.x, finish.y, 8, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, 10, 0, Math.PI*2); ctx.fill();
 
         // Игрок
         ctx.fillStyle = 'white';
-        ctx.shadowBlur = 15; ctx.shadowColor = 'white';
+        ctx.shadowBlur = 20; ctx.shadowColor = 'white';
         ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill();
         ctx.shadowBlur = 0;
 
         if(Math.hypot(player.x - finish.x, player.y - finish.y) < 15) {
-            if(level < 3) { level++; document.getElementById('lvl').innerText = level; setupLevel(); }
-            else { /* Если прошел 3-й (почти нереально) */ gameOver(); }
+            if(level < 4) { level++; document.getElementById('lvl').innerText = level; setupLevel(); }
+            else { gameOver(); }
         }
         requestAnimationFrame(loop);
     }
