@@ -5,149 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neural Path</title>
     <style>
-        :root { --primary: #ff4d94; --bg: #0a0510; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; font-family: 'Segoe UI', sans-serif; }
-        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 2; }
-        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 30%, #1a0820 0%, #0a0510 80%); z-index: 1; }
-        #ui { position: absolute; top: 40px; width: 100%; text-align: center; color: white; opacity: 0.5; letter-spacing: 4px; z-index: 10; font-size: 11px; text-transform: uppercase; }
-        #joy-outer { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); z-index: 10; display: flex; align-items: center; justify-content: center; }
-        #joy-stick { width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 20px var(--primary); }
-        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-start { padding: 15px 60px; background: white; border: none; border-radius: 2px; color: black; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #0a0510; overflow: hidden; touch-action: none; font-family: sans-serif; }
+        canvas { display: block; z-index: 2; position: absolute; }
+        #ui { position: absolute; top: 30px; width: 100%; text-align: center; color: #ff4d94; letter-spacing: 5px; z-index: 10; font-size: 14px; text-transform: uppercase; }
+        #joy-outer { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); z-index: 10; }
+        #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 20px #ff4d94; }
         #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
-        #screamer img { width: 140%; height: 140%; object-fit: cover; position: absolute; top: -20%; left: -20%; }
+        #screamer img { width: 140%; height: 140%; position: absolute; top: -20%; left: -20%; object-fit: cover; }
         .shake { animation: sh 0.05s infinite; }
-        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-20px, 20px)} 100% {transform: translate(20px, -20px)} }
+        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-15px, 15px)} 100% {transform: translate(15px, -15px)} }
+        #start-screen { position: fixed; inset: 0; background: #0a0510; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .btn { padding: 15px 50px; background: white; border-radius: 5px; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
-<div class="bg-glow"></div>
-<div id="ui">NEURAL LINK: NODE <span id="lvl">1</span> / 4</div>
-<div id="start-screen">
-    <h1 style="color:white; font-weight:100; letter-spacing:8px; margin-bottom:40px;">INITIALIZING...</h1>
-    <button class="btn-start" onclick="initGame()">Start</button>
-</div>
-<canvas id="stage"></canvas>
-<div id="joy-outer"><div id="joy-stick"></div></div>
-<div id="screamer"><img src="77307.jpg"></div>
-<audio id="bgm" src="bg-music.mp3" loop></audio>
-<audio id="scm" src="scream.mp3"></audio>
+    <div id="ui">NODE: <span id="lvl">1</span> / 4</div>
+    <div id="start-screen"><div class="btn" onclick="start()">Connect</div></div>
+    <canvas id="c"></canvas>
+    <div id="joy-outer"><div id="joy-stick"></div></div>
+    <div id="screamer"><img src="77307.jpg"></div>
+    <audio id="scm" src="scream.mp3"></audio>
 
 <script>
-    const cvs = document.getElementById('stage'), ctx = cvs.getContext('2d');
-    const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
+    const cvs = document.getElementById('c'), ctx = cvs.getContext('2d');
+    const scm = document.getElementById('scm');
     const stick = document.getElementById('joy-stick');
-    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:7}, finish = {x:0, y:0}, joy = {x:0, y:0, active:false}, cellSize;
+    let level = 1, active = false, walls = [], player = {x:0, y:0, r:6}, finish = {x:0, y:0}, joy = {x:0, y:0};
 
-    // Карты по мотивам твоих скриншотов
+    // 0 - пусто, 1 - стена, 2 - старт, 3 - финиш
     const maps = [
-        // Node 1 (Простой)
-        [[1,1,1,1,1],[1,2,0,3,1],[1,1,1,1,1]],
-        // Node 2 (Как на скрине 77391)
-        [[1,1,1,1,1,1,1,1],[1,2,0,0,1,0,3,1],[1,1,1,0,1,0,1,1],[1,1,1,1,1,1,1,1]],
-        // Node 3 (Как на скрине 77392 - Сложный)
-        [
-            [1,1,1,1,1,1,1,1,1],
-            [1,2,0,0,0,1,0,0,1],
-            [1,1,1,1,0,1,0,1,1],
-            [1,0,0,0,0,0,0,0,1],
-            [1,0,1,1,1,1,1,0,1],
-            [1,0,0,0,0,3,1,0,1],
-            [1,1,1,1,1,1,1,1,1]
-        ],
-        // Node 4 (ФИНАЛЬНЫЙ ЛАБИРИНТ - ЛОВУШКА)
-        [
-            [1,1,1,1,1,1,1,1,1,1,1],
-            [1,2,0,1,0,0,0,0,0,0,1],
-            [1,1,0,1,0,1,1,1,1,0,1],
-            [1,0,0,0,0,1,0,0,0,0,1],
-            [1,0,1,1,1,1,0,1,1,1,1],
-            [1,0,0,0,0,0,0,1,0,3,1],
-            [1,1,1,1,1,1,1,1,1,1,1]
-        ]
+        [[1,1,1,1,1],[1,2,0,3,1],[1,1,1,1,1]], // Ур 1
+        [[1,1,1,1,1,1,1],[1,2,0,1,0,3,1],[1,1,0,0,0,1,1],[1,1,1,1,1,1,1]], // Ур 2
+        [[1,1,1,1,1,1,1,1],[1,2,0,0,0,0,3,1],[1,1,1,0,1,1,1,1],[1,1,1,1,1,1,1,1]], // Ур 3
+        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,0,1,0,0,0,0,1],[1,1,1,0,1,0,1,1,0,1],[1,0,0,0,0,0,1,3,0,1],[1,1,1,1,1,1,1,1,1,1]] // Ур 4 (Ловушка)
     ];
 
-    function initGame() {
-        bgm.play().catch(()=>{}); scm.load();
-        document.getElementById('start-screen').style.display = 'none';
-        gameActive = true; setupLevel(); loop();
+    function start() {
+        document.getElementById('start-screen').style.display='none';
+        active = true; build(); loop();
     }
 
-    function setupLevel() {
+    function build() {
         cvs.width = window.innerWidth; cvs.height = window.innerHeight;
-        const m = maps[Math.min(level-1, maps.length-1)];
-        cellSize = Math.floor(Math.min(cvs.width / (m[0].length + 1), cvs.height / 10));
+        const m = maps[level-1];
+        const size = Math.floor(cvs.width / (m[0].length + 1));
         walls = [];
-        let ox = (cvs.width - m[0].length * cellSize) / 2;
-        let oy = (cvs.height - m.length * cellSize) / 2.5;
+        let ox = (cvs.width - m[0].length * size) / 2;
+        let oy = (cvs.height - m.length * size) / 2.5;
 
         for(let y=0; y<m.length; y++) {
             for(let x=0; x<m[y].length; x++) {
-                let px = ox + x * cellSize, py = oy + y * cellSize;
-                if(m[y][x] === 1) walls.push({x: px, y: py, w: cellSize, h: cellSize});
-                if(m[y][x] === 2) { player.x = px + cellSize/2; player.y = py + cellSize/2; }
-                if(m[y][x] === 3) { finish.x = px + cellSize/2; finish.y = py + cellSize/2; }
+                let px = ox + x * size, py = oy + y * size;
+                if(m[y][x] === 1) walls.push({x: px, y: py, s: size});
+                if(m[y][x] === 2) { player.x = px + size/2; player.y = py + size/2; }
+                if(m[y][x] === 3) { finish.x = px + size/2; finish.y = py + size/2; }
             }
         }
     }
 
-    window.addEventListener('touchstart', e => { joy.active = true; });
     window.addEventListener('touchmove', e => {
-        if(!joy.active) return;
         const r = document.getElementById('joy-outer').getBoundingClientRect();
         const t = e.touches[0];
-        let dx = t.clientX - (r.left + 55), dy = t.clientY - (r.top + 55);
-        const dist = Math.hypot(dx, dy);
-        if(dist > 40) { dx *= 40/dist; dy *= 40/dist; }
+        let dx = t.clientX - (r.left + 50), dy = t.clientY - (r.top + 50);
+        const d = Math.hypot(dx, dy);
+        if(d > 40) { dx *= 40/d; dy *= 40/d; }
         stick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 11; joy.y = dy / 11;
+        joy.x = dx / 8; joy.y = dy / 8;
     });
-    window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; stick.style.transform = 'translate(0,0)'; });
+
+    window.addEventListener('touchend', () => { joy = {x:0, y:0}; stick.style.transform = 'translate(0,0)'; });
 
     function loop() {
-        if(!gameActive) return;
+        if(!active) return;
         let nx = player.x + joy.x, ny = player.y + joy.y;
-        let hit = false;
+        let col = false;
 
         for(let w of walls) {
-            if(nx + 3 > w.x && nx - 3 < w.x + w.w && ny + 3 > w.y && ny - 3 < w.y + w.h) {
-                hit = true;
-                if(level === 4) { gameOver(); return; }
+            // Проверка столкновения с запасом 4px для легкости прохода
+            if(nx+4 > w.x && nx-4 < w.x+w.s && ny+4 > w.y && ny-4 < w.y+w.s) {
+                col = true;
+                if(level === 4) { end(); return; }
                 break;
             }
         }
 
-        if(!hit) { player.x = nx; player.y = ny; }
+        if(!col) { player.x = nx; player.y = ny; }
 
-        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        ctx.clearRect(0,0,cvs.width, cvs.height);
         walls.forEach(w => {
             ctx.strokeStyle = 'rgba(255, 77, 148, 0.4)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(w.x+1, w.y+1, w.w-2, w.h-2);
+            ctx.strokeRect(w.x+2, w.y+2, w.s-4, w.s-4);
         });
 
-        // Финиш
         ctx.fillStyle = '#ff4d94';
-        ctx.shadowBlur = 15; ctx.shadowColor = '#ff4d94';
-        ctx.beginPath(); ctx.arc(finish.x, finish.y, 9, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, 8, 0, 7); ctx.fill();
 
-        // Игрок
         ctx.fillStyle = 'white';
-        ctx.shadowBlur = 20; ctx.shadowColor = 'white';
-        ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 15; ctx.shadowColor = 'white';
+        ctx.beginPath(); ctx.arc(player.x, player.y, 6, 0, 7); ctx.fill();
         ctx.shadowBlur = 0;
 
         if(Math.hypot(player.x - finish.x, player.y - finish.y) < 15) {
-            if(level < 4) { level++; document.getElementById('lvl').innerText = level; setupLevel(); }
-            else { gameOver(); }
+            if(level < 4) { level++; document.getElementById('lvl').innerText = level; build(); }
+            else { end(); }
         }
         requestAnimationFrame(loop);
     }
 
-    function gameOver() {
-        gameActive = false; bgm.pause(); scm.currentTime = 0; scm.play();
-        document.getElementById('screamer').style.display = 'block';
-        document.getElementById('screamer').classList.add('shake');
+    function end() {
+        active = false; scm.play();
+        const s = document.getElementById('screamer');
+        s.style.display = 'block'; s.classList.add('shake');
         if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
     }
 </script>
