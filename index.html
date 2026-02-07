@@ -3,56 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEON MAZE: NEXT GEN</title>
+    <title>NEON MAZE: SHAKE EDITION</title>
     <style>
-        :root {
-            --neon: #00f3ff;
-            --finish: #ff00ff;
-            --bg: #050508;
-        }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; font-family: 'Segoe UI', sans-serif; }
-        canvas { display: block; filter: blur(0.5px); }
-
-        /* Интерфейс */
-        #ui { position: absolute; top: 30px; left: 0; width: 100%; text-align: center; color: var(--neon); font-size: 14px; letter-spacing: 3px; z-index: 10; pointer-events: none; opacity: 0.8; }
+        :root { --neon: #00f3ff; --bg: #050508; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; font-family: sans-serif; }
+        canvas { display: block; }
         
-        /* Джойстик */
-        #joy-outer { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 120px; border: 2px solid rgba(0, 243, 255, 0.2); border-radius: 50%; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(5px); z-index: 10; }
-        #joy-stick { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 30px var(--neon); transition: transform 0.1s ease-out; }
+        #ui { position: absolute; top: 30px; width: 100%; text-align: center; color: var(--neon); letter-spacing: 3px; z-index: 10; pointer-events: none; text-shadow: 0 0 8px var(--neon); }
+        
+        #joy-outer { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(5px); z-index: 10; }
+        #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 20px var(--neon); }
+        
+        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
+        .start-btn { padding: 15px 40px; background: transparent; border: 1px solid var(--neon); color: var(--neon); cursor: pointer; text-transform: uppercase; font-weight: bold; margin-top: 20px; box-shadow: 0 0 10px var(--neon); }
 
-        /* Стартовый экран */
-        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; }
-        .warning { color: #ff3e3e; font-size: 12px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
-        .start-btn { padding: 20px 50px; background: transparent; border: 1px solid var(--neon); color: var(--neon); font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); text-transform: uppercase; }
+        /* СКРИМЕР И БЕШЕНАЯ ТРЯСКА */
+        #screamer { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background: black; 
+            z-index: 9999; 
+            overflow: hidden;
+        }
+        #screamer img { 
+            width: 110%; /* Чуть больше экрана, чтобы при тряске не было пустых краев */
+            height: 110%; 
+            object-fit: cover; 
+            position: absolute;
+            top: -5%;
+            left: -5%;
+        }
 
-        /* Скример */
-        #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
-        #screamer img { width: 100%; height: 100%; object-fit: cover; }
+        .shake-active { 
+            animation: ultimate-shake 0.1s infinite; 
+        }
+
+        @keyframes ultimate-shake {
+            0% { transform: translate(0,0) rotate(0deg); }
+            10% { transform: translate(-10px, -5px) rotate(-1deg); }
+            20% { transform: translate(10px, 5px) rotate(1deg); }
+            30% { transform: translate(-5px, 10px) rotate(0deg); }
+            40% { transform: translate(5px, -10px) rotate(1deg); }
+            50% { transform: translate(-10px, 2px) rotate(-1deg); }
+            60% { transform: translate(8px, 8px) rotate(0deg); }
+            70% { transform: translate(-8px, -8px) rotate(-1deg); }
+            80% { transform: translate(10px, -2px) rotate(1deg); }
+            90% { transform: translate(-5px, 5px) rotate(0deg); }
+            100% { transform: translate(0,0) rotate(0deg); }
+        }
     </style>
 </head>
 <body>
 
-<script>
-    // Автообновление один раз
-    if (!sessionStorage.getItem('reloaded')) {
-        sessionStorage.setItem('reloaded', 'true');
-        window.location.reload();
-    }
-</script>
-
 <div id="ui">LEVEL: <span id="lvl">1</span> / 5</div>
 
 <div id="start-screen">
-    <div style="font-size: 40px; font-weight: 100; margin-bottom: 10px; letter-spacing: 5px;">NEON <span style="color:var(--neon)">MAZE</span></div>
-    <div class="warning">⚠️ IPHONE: ВЫКЛЮЧИ БЕЗЗВУЧНЫЙ РЕЖИМ (РЫЧАЖОК) ⚠️</div>
-    <div style="font-size: 14px; opacity: 0.6; margin-bottom: 40px;">Включи звук на 100% для калибровки системы</div>
-    <button class="start-btn" onclick="begin()">ИНИЦИАЛИЗАЦИЯ</button>
+    <div style="letter-spacing: 10px; font-size: 30px; font-weight: bold;">NEON <span style="color:var(--neon)">MAZE</span></div>
+    <div style="color: #ff3e3e; font-size: 11px; margin-top: 25px; font-weight: bold; animation: blink 1s infinite;">⚠️ ВЫКЛЮЧИ БЕЗЗВУЧНЫЙ РЕЖИМ ⚠️</div>
+    <button class="start-btn" id="goBtn">ИНИЦИАЛИЗАЦИЯ</button>
 </div>
 
 <canvas id="game"></canvas>
 <div id="joy-outer"><div id="joy-stick"></div></div>
-<div id="screamer"><img src="77307.jpg"></div>
+
+<div id="screamer">
+    <img src="77307.jpg" id="scImg">
+</div>
 
 <audio id="bgm" src="bg-music.mp3" loop></audio>
 <audio id="scm" src="scream.mp3"></audio>
@@ -62,129 +82,90 @@
     const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
     const joyStick = document.getElementById('joy-stick');
     
-    let level = 1, cellSize, offX, offY;
-    let player = { x: 0, y: 0, r: 10, targetX: 0, targetY: 0 };
+    let level = 1, cellSize, offX, offY, gameActive = false;
+    let player = { x: 0, y: 0 };
     let finish = { x: 0, y: 0 };
     let walls = [], joy = { x: 0, y: 0, active: false };
 
-    // Новые сложные лабиринты (0 - путь, 1 - стена, 2 - старт, 3 - финиш)
     const maps = [
-        [[1,1,1,1,1,1,1],[1,2,0,0,0,3,1],[1,1,1,1,1,1,1]],
+        [[1,1,1,1,1,1],[1,2,0,0,3,1],[1,1,1,1,1,1]],
         [[1,1,1,1,1],[1,2,1,3,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]],
         [[1,1,1,1,1,1],[1,2,0,0,0,1],[1,1,1,1,0,1],[1,3,0,0,0,1],[1,1,1,1,1,1]],
         [[1,1,1,1,1,1,1],[1,2,0,1,0,0,1],[1,1,0,1,0,1,1],[1,0,0,0,0,3,1],[1,1,1,1,1,1,1]],
         [[1,1,1,1,1,1,1],[1,2,0,0,0,0,1],[1,1,1,1,1,0,1],[1,3,0,0,0,0,1],[1,1,1,1,1,1,1]]
     ];
 
-    function begin() {
-        // Разблокировка аудио для iPhone
-        const aContext = new (window.AudioContext || window.webkitAudioContext)();
-        bgm.play();
-        scm.load(); scm.volume = 0; scm.play().then(() => { scm.pause(); scm.volume = 1; });
-
+    document.getElementById('goBtn').addEventListener('click', function() {
+        bgm.play().catch(()=>{});
+        scm.load(); // Предзагрузка без звука
         document.getElementById('start-screen').style.display = 'none';
+        gameActive = true;
         init();
         loop();
-    }
+    });
 
     function init() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        const currentMap = maps[level-1];
-        cellSize = Math.min(canvas.width / (currentMap[0].length + 1), canvas.height / (currentMap.length + 4));
-        
+        const m = maps[level-1];
+        cellSize = Math.min(canvas.width / (m[0].length + 1), canvas.height / (m.length + 4));
         walls = [];
-        offX = (canvas.width - currentMap[0].length * cellSize) / 2;
-        offY = (canvas.height - currentMap.length * cellSize) / 2.5;
-
-        for(let y=0; y<currentMap.length; y++) {
-            for(let x=0; x<currentMap[y].length; x++) {
-                let val = currentMap[y][x];
+        offX = (canvas.width - m[0].length * cellSize) / 2;
+        offY = (canvas.height - m.length * cellSize) / 2;
+        for(let y=0; y<m.length; y++) {
+            for(let x=0; x<m[y].length; x++) {
                 let px = offX + x * cellSize, py = offY + y * cellSize;
-                if(val === 1) walls.push({x: px, y: py, w: cellSize, h: cellSize});
-                if(val === 2) { player.x = px + cellSize/2; player.y = py + cellSize/2; }
-                if(val === 3) { finish.x = px + cellSize/2; finish.y = py + cellSize/2; }
+                if(m[y][x] === 1) walls.push({x: px, y: py, w: cellSize, h: cellSize});
+                if(m[y][x] === 2) { player.x = px + cellSize/2; player.y = py + cellSize/2; }
+                if(m[y][x] === 3) { finish.x = px + cellSize/2; finish.y = py + cellSize/2; }
             }
         }
-        player.targetX = player.x; player.targetY = player.y;
     }
 
-    // Джойстик без лагов
     window.addEventListener('touchstart', e => { 
-        const t = e.touches[0];
-        const r = document.getElementById('joy-outer').getBoundingClientRect();
-        if(Math.hypot(t.clientX - (r.left+60), t.clientY - (r.top+60)) < 80) joy.active = true;
+        const t = e.touches[0], r = document.getElementById('joy-outer').getBoundingClientRect();
+        if(Math.hypot(t.clientX - (r.left+50), t.clientY - (r.top+50)) < 60) joy.active = true;
     });
 
     window.addEventListener('touchmove', e => {
         if(!joy.active) return;
-        const t = e.touches[0];
-        const r = document.getElementById('joy-outer').getBoundingClientRect();
-        const cx = r.left + 60, cy = r.top + 60;
-        let dx = t.clientX - cx, dy = t.clientY - cy;
+        const t = e.touches[0], r = document.getElementById('joy-outer').getBoundingClientRect();
+        let dx = t.clientX - (r.left+50), dy = t.clientY - (r.top+50);
         const d = Math.hypot(dx, dy);
-        if(d > 35) { dx *= 35/d; dy *= 35/d; }
+        if(d > 30) { dx *= 30/d; dy *= 30/d; }
         joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 5; joy.y = dy / 5;
+        joy.x = dx / 7; joy.y = dy / 7;
     });
 
-    window.addEventListener('touchend', () => { 
-        joy.active = false; joy.x = 0; joy.y = 0; 
-        joyStick.style.transform = 'translate(0,0)'; 
-    });
+    window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; joyStick.style.transform = 'translate(0,0)'; });
 
     function loop() {
+        if(!gameActive) return;
         if(joy.active) {
-            let nx = player.x + joy.x;
-            let ny = player.y + joy.y;
-            let collision = false;
-            walls.forEach(w => {
-                if(nx+8 > w.x && nx-8 < w.x+w.w && ny+8 > w.y && ny-8 < w.y+w.h) collision = true;
-            });
-            if(!collision) { player.x = nx; player.y = ny; }
+            let nx = player.x + joy.x, ny = player.y + joy.y, hit = false;
+            walls.forEach(w => { if(nx+8 > w.x && nx-8 < w.x+w.w && ny+8 > w.y && ny-8 < w.y+w.h) hit = true; });
+            if(!hit) { player.x = nx; player.y = ny; }
         }
+        ctx.fillStyle = '#050508'; ctx.fillRect(0,0,canvas.width, canvas.height);
+        walls.forEach(w => { ctx.strokeStyle = 'rgba(0, 243, 255, 0.4)'; ctx.strokeRect(w.x+2, w.y+2, w.w-4, w.h-4); });
+        ctx.fillStyle = '#ff00ff'; ctx.beginPath(); ctx.arc(finish.x, finish.y, cellSize/5, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(player.x, player.y, 8, 0, Math.PI*2); ctx.fill();
 
-        // Рисование
-        ctx.fillStyle = '#050508';
-        ctx.fillRect(0,0,canvas.width, canvas.height);
-
-        // Стены (дизайн блоков)
-        walls.forEach(w => {
-            ctx.strokeStyle = 'rgba(0, 243, 255, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(w.x+4, w.y+4, w.w-8, w.h-8);
-            ctx.fillStyle = 'rgba(0, 243, 255, 0.05)';
-            ctx.fillRect(w.x+4, w.y+4, w.w-8, w.h-8);
-        });
-
-        // Финиш
-        ctx.shadowBlur = 20; ctx.shadowColor = '#ff00ff';
-        ctx.fillStyle = '#ff00ff';
-        ctx.beginPath();
-        ctx.arc(finish.x, finish.y, cellSize/5, 0, Math.PI*2);
-        ctx.fill();
-
-        // Игрок
-        ctx.shadowBlur = 15; ctx.shadowColor = '#00f3ff';
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, 10, 0, Math.PI*2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Логика перехода
-        if(Math.hypot(player.x - finish.x, player.y - finish.y) < 20) {
-            if(level < 5) {
-                level++; document.getElementById('lvl').innerText = level; init();
-            } else {
-                bgm.pause(); scm.play();
-                document.getElementById('screamer').style.display = 'block';
+        if(Math.hypot(player.x - finish.x, player.y - finish.y) < 15) {
+            if(level < 5) { level++; document.getElementById('lvl').innerText = level; init(); } 
+            else { 
+                gameActive = false;
+                bgm.pause();
+                scm.currentTime = 0;
+                scm.play();
+                const sc = document.getElementById('screamer');
+                sc.style.display = 'block';
+                sc.classList.add('shake-active'); // ЗАПУСК ТРЯСКИ
                 if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
             }
         }
         requestAnimationFrame(loop);
     }
-    window.onresize = init;
 </script>
 </body>
 </html>
