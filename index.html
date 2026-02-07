@@ -3,234 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEURAL CALIBRATION v.4.02</title>
+    <title>Neon Maze: Chill Edition</title>
     <style>
-        body {
-            margin: 0;
-            background-color: #0a0a0a;
-            color: #00ff41; /* Цвет хакерского терминала */
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            text-transform: uppercase;
+        :root {
+            --neon-color: #00f3ff;
+            --wall-color: #1a1a2e;
+            --bg-color: #0f0f1b;
         }
 
-        /* Эффект старого монитора */
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            color: white; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; touch-action: none;
+        }
+
+        #ui-layer {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            z-index: 5; pointer-events: none;
+        }
+
+        canvas { display: block; background: var(--bg-color); }
+
+        /* Стили джойстика */
+        #joystick-container {
+            position: absolute; bottom: 50px; left: 50%;
+            transform: translateX(-50%);
+            width: 120px; height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--neon-color);
+            border-radius: 50%;
             z-index: 10;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
         }
 
-        #ui-wrapper {
-            width: 90%;
-            max-width: 400px;
-            border: 1px solid #00ff41;
-            padding: 20px;
-            position: relative;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
-        }
-
-        .header {
-            font-size: 12px;
-            border-bottom: 1px solid #00ff41;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        #display {
-            height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px inset #00ff41;
-            background: rgba(0, 255, 65, 0.05);
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .scan-line {
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background: rgba(0, 255, 65, 0.3);
-            top: 0;
-            animation: scan 3s linear infinite;
-        }
-
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-
-        /* Кнопка-сканер */
-        #scanner-target {
-            width: 80px;
-            height: 80px;
-            border: 2px solid #00ff41;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.1s;
-            position: relative;
-        }
-
-        #scanner-target:active {
-            background: rgba(0, 255, 65, 0.4);
-            box-shadow: 0 0 20px #00ff41;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            border: 1px solid #00ff41;
-            margin-top: 15px;
-            position: relative;
-        }
-
-        #progress-fill {
-            width: 0%;
-            height: 100%;
-            background: #00ff41;
-            transition: width 0.1s;
+        #joystick-knob {
+            position: absolute; top: 30px; left: 30px;
+            width: 60px; height: 60px;
+            background: var(--neon-color);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--neon-color);
         }
 
         /* Скример */
         #screamer {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000;
-            z-index: 9999;
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh; background: black; z-index: 9999;
         }
         #screamer img { width: 100%; height: 100%; object-fit: cover; }
 
-        .hint { font-size: 10px; color: #008f11; margin-top: 10px; text-align: center;}
+        .start-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 20;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px;
+        }
+
+        .btn {
+            padding: 15px 40px; background: var(--neon-color);
+            color: black; border: none; border-radius: 30px;
+            font-weight: bold; font-size: 1.2rem; cursor: pointer;
+            box-shadow: 0 0 20px var(--neon-color);
+        }
     </style>
 </head>
 <body>
 
-<div id="ui-wrapper">
-    <div class="header">
-        <span>ID: 77307-X</span>
-        <span>LEVEL: <span id="lvl-num">1</span>/5</span>
-    </div>
+<div id="ui-layer">
+    <div id="lvl-display">Уровень: 1 / 5</div>
+</div>
 
-    <div id="display">
-        <div class="scan-line"></div>
-        <div id="scanner-target">TAP</div>
-        <div class="hint" id="instruction">Нажмите для калибровки</div>
-    </div>
+<div class="start-screen" id="start-screen">
+    <h1 style="color: var(--neon-color)">NEON MAZE</h1>
+    <p>Дойди до фиолетовой зоны.<br>Включи звук на максимум для погружения в атмосферу 🎧</p>
+    <button class="btn" onclick="startGame()">ИГРАТЬ</button>
+</div>
 
-    <div class="progress-bar">
-        <div id="progress-fill"></div>
-    </div>
-    <div class="hint" style="margin-top: 5px;">Data Synchronization: <span id="percent">0</span>%</div>
+<canvas id="gameCanvas"></canvas>
+
+<div id="joystick-container">
+    <div id="joystick-knob"></div>
 </div>
 
 <div id="screamer">
     <img src="screamer.jpg">
 </div>
 
-<audio id="scream-audio" src="scream.mp3" preload="auto"></audio>
+<audio id="bg-audio" src="bg-music.mp3" loop></audio>
+<audio id="scream-audio" src="scream.mp3"></audio>
 
 <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const bgAudio = document.getElementById('bg-audio');
+    const screamAudio = document.getElementById('scream-audio');
+    const screamerDiv = document.getElementById('screamer');
+
     let level = 1;
-    let progress = 0;
-    let isScanning = false;
-    let scanInterval;
+    let player = { x: 50, y: 50, radius: 10 };
+    let finish = { x: 0, y: 0, size: 30 };
+    let walls = [];
+    let joystick = { x: 0, y: 0, active: false };
 
-    const btn = document.getElementById('scanner-target');
-    const fill = document.getElementById('progress-fill');
-    const percentTxt = document.getElementById('percent');
-    const lvlTxt = document.getElementById('lvl-num');
-    const instr = document.getElementById('instruction');
-    const audio = document.getElementById('scream-audio');
-    const screamer = document.getElementById('screamer');
-
-    // Логика игры
-    function updateLevel() {
-        level++;
-        if (level > 5) return;
-        
-        lvlTxt.innerText = level;
-        progress = 0;
-        fill.style.width = '0%';
-        percentTxt.innerText = '0';
-
-        if (level === 5) {
-            btn.innerText = "HOLD";
-            instr.innerText = "ЗАЖМИТЕ ДЛЯ ПОЛНОГО СКАНИРОВАНИЯ";
-            instr.style.color = "#ff0000";
-        }
+    // Настройка размеров под экран
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initLevel();
     }
 
-    // Обработка нажатий
-    btn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        if (level < 5) {
-            // Первые 4 уровня — просто клики, которые прибавляют прогресс
-            progress += 25;
-            fill.style.width = progress + '%';
-            percentTxt.innerText = progress;
-            if (progress >= 100) {
-                setTimeout(updateLevel, 200);
-            }
+    function startGame() {
+        document.getElementById('start-screen').style.display = 'none';
+        bgAudio.volume = 0.5;
+        bgAudio.play();
+        resize();
+        animate();
+    }
+
+    function initLevel() {
+        player.x = 40;
+        player.y = 40;
+        walls = [];
+        
+        // Рисуем границы и стены в зависимости от уровня
+        if (level === 1) {
+            walls.push({x: 0, y: 100, w: canvas.width - 100, h: 20});
+            finish = {x: canvas.width - 50, y: canvas.height - 150};
+        } else if (level === 5) {
+            // Самый сложный уровень
+            walls.push({x: 100, y: 0, w: 20, h: canvas.height - 100});
+            walls.push({x: 200, y: 100, w: 20, h: canvas.height});
+            finish = {x: canvas.width - 40, y: 50};
         } else {
-            // 5 уровень — нужно держать!
-            isScanning = true;
-            scanInterval = setInterval(() => {
-                if (progress < 98) {
-                    progress += 1;
-                    fill.style.width = progress + '%';
-                    percentTxt.innerText = progress;
-                } else if (progress === 98) {
-                    // Замираем на 98%, чтобы он придвинулся к экрану
-                    clearInterval(scanInterval);
-                    setTimeout(() => {
-                        activateScreamer();
-                    }, 1500); // Задержка перед смертью
-                }
-            }, 50);
+            walls.push({x: 100, y: 100, w: 200, h: 20});
+            finish = {x: canvas.width - 60, y: canvas.height - 100};
+        }
+    }
+
+    // Логика джойстика
+    const knob = document.getElementById('joystick-knob');
+    window.addEventListener('touchstart', e => {
+        const touch = e.touches[0];
+        const rect = document.getElementById('joystick-container').getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        if (Math.hypot(touch.clientX - centerX, touch.clientY - centerY) < 100) {
+            joystick.active = true;
         }
     });
 
-    btn.addEventListener('touchend', () => {
-        if (level === 5 && isScanning) {
-            clearInterval(scanInterval);
-            isScanning = false;
-            if (progress < 98) {
-                progress = 0;
-                fill.style.width = '0%';
-                percentTxt.innerText = '0';
-                alert("СКАНИРОВАНИЕ ПРЕРВАНО. ДЕРЖИТЕ ДО КОНЦА!");
+    window.addEventListener('touchmove', e => {
+        if (!joystick.active) return;
+        const touch = e.touches[0];
+        const rect = document.getElementById('joystick-container').getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        let dx = touch.clientX - centerX;
+        let dy = touch.clientY - centerY;
+        const dist = Math.hypot(dx, dy);
+        
+        if (dist > 30) {
+            dx = (dx / dist) * 30;
+            dy = (dy / dist) * 30;
+        }
+        
+        knob.style.transform = `translate(${dx}px, ${dy}px)`;
+        joystick.x = dx / 15;
+        joystick.y = dy / 15;
+    });
+
+    window.addEventListener('touchend', () => {
+        joystick.active = false;
+        joystick.x = 0; joystick.y = 0;
+        knob.style.transform = `translate(0px, 0px)`;
+    });
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Стены
+        ctx.fillStyle = '#1a1a2e';
+        walls.forEach(w => ctx.fillRect(w.x, w.y, w.w, w.h));
+        
+        // Финиш
+        ctx.fillStyle = '#bc13fe';
+        ctx.shadowBlur = 15; ctx.shadowColor = '#bc13fe';
+        ctx.fillRect(finish.x, finish.y, finish.size, finish.size);
+        
+        // Игрок
+        ctx.fillStyle = varColor();
+        ctx.shadowBlur = 20; ctx.shadowColor = varColor();
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.radius, 0, Math.PI*2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    function varColor() { return level === 5 ? '#ff003c' : '#00f3ff'; }
+
+    function update() {
+        if (!joystick.active) return;
+        
+        let nextX = player.x + joystick.x;
+        let nextY = player.y + joystick.y;
+
+        // Коллизии со стенами
+        let hit = false;
+        walls.forEach(w => {
+            if (nextX + 10 > w.x && nextX - 10 < w.x + w.w &&
+                nextY + 10 > w.y && nextY - 10 < w.y + w.h) {
+                hit = true;
+            }
+        });
+
+        if (!hit) {
+            player.x = nextX;
+            player.y = nextY;
+        }
+
+        // Проверка финиша
+        if (Math.hypot(player.x - (finish.x + 15), player.y - (finish.y + 15)) < 20) {
+            if (level < 5) {
+                level++;
+                document.getElementById('lvl-display').innerText = `Уровень: ${level} / 5`;
+                initLevel();
+            } else {
+                triggerScreamer();
             }
         }
-    });
-
-    function activateScreamer() {
-        if (navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
-        screamer.style.display = 'block';
-        audio.play().catch(e => console.log("Sound error:", e));
-        
-        // Попытка войти в фуллскрин
-        const doc = document.documentElement;
-        if (doc.requestFullscreen) doc.requestFullscreen();
-        else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
     }
+
+    function triggerScreamer() {
+        bgAudio.pause();
+        screamAudio.volume = 1.0;
+        screamAudio.play();
+        screamerDiv.style.display = 'block';
+        if (navigator.vibrate) navigator.vibrate([1000, 500, 2000]);
+        document.documentElement.requestFullscreen();
+    }
+
+    function animate() {
+        update();
+        draw();
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resize);
 </script>
 
 </body>
