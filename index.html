@@ -3,134 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Игра "Мир Спокойствия"</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>CYBER SCANNER v1.0</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
         :root {
-            --primary-bg: #1e1e2f;
-            --secondary-bg: #282a3c;
-            --accent-color: #8be9fd;
-            --text-color: #f8f8f2;
-            --button-color: #50fa7b;
-            --button-hover: #69ffb4;
-            --border-radius: 10px;
-            --transition-speed: 0.3s ease-in-out;
+            --neon-blue: #00f3ff;
+            --neon-red: #ff003c;
+            --bg-dark: #050505;
         }
 
         body {
             margin: 0;
-            background: var(--primary-bg);
-            color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
-            overflow: hidden;
+            background: var(--bg-dark);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            perspective: 1000px; /* Для 3D-эффектов */
-            touch-action: manipulation; /* Для лучшей работы на мобилках */
-            -webkit-tap-highlight-color: transparent; /* Убираем синюю подсветку при тапе */
+            height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
         }
 
-        #game-container {
-            background: var(--secondary-bg);
-            border-radius: var(--border-radius);
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        /* Брутальный контейнер */
+        #game-box {
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid var(--neon-blue);
+            padding: 40px 20px;
             text-align: center;
-            transform-style: preserve-3d;
-            transition: transform var(--transition-speed);
-            max-width: 90%;
-            width: 400px;
-            box-sizing: border-box;
+            background: rgba(0, 243, 255, 0.05);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.1);
             position: relative;
-            z-index: 1;
         }
-        
-        #game-container:hover {
-            transform: rotateY(5deg) rotateX(5deg);
+
+        #game-box::before {
+            content: "SYSTEM ONLINE";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--bg-dark);
+            padding: 0 10px;
+            font-size: 10px;
+            color: var(--neon-blue);
         }
 
         h1 {
-            color: var(--accent-color);
-            margin-bottom: 20px;
-            font-size: 2.2em;
-            text-shadow: 0 0 10px rgba(139, 233, 253, 0.4);
-        }
-
-        p {
-            font-size: 1.1em;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        #level-info {
-            font-size: 1.3em;
+            font-size: 24px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             margin-bottom: 30px;
-            color: var(--button-color);
-            font-weight: 700;
-            text-shadow: 0 0 5px rgba(80, 250, 123, 0.3);
+            text-shadow: 0 0 10px var(--neon-blue);
         }
 
-        .game-button {
-            background: var(--button-color);
-            color: var(--primary-bg);
-            border: none;
-            border-radius: var(--border-radius);
-            padding: 15px 30px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background var(--transition-speed), transform var(--transition-speed);
-            outline: none;
-            margin: 10px;
-            min-width: 120px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
+        .rules {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
 
-        .game-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
+        #status {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: var(--neon-blue);
+        }
+
+        /* Главная кнопка */
+        #trigger {
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            opacity: 0;
-            transform: translate(-50%, -50%);
-            transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
-        }
-
-        .game-button:active::after {
-            width: 200%;
-            height: 200%;
-            opacity: 1;
-            transition: 0s;
-        }
-
-
-        .game-button:hover {
-            background: var(--button-hover);
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .game-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        #button-container {
+            border: 4px solid #333;
+            background: #111;
+            cursor: pointer;
+            outline: none;
+            transition: 0.1s;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            margin-top: 20px;
+            align-items: center;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 0 0 rgba(255, 0, 60, 0);
         }
 
-        #screamer-overlay {
+        #trigger.active {
+            background: var(--neon-red);
+            border-color: #ff6e8f;
+            box-shadow: 0 0 40px var(--neon-red);
+        }
+
+        #trigger:active { transform: scale(0.95); }
+
+        /* Скример */
+        #screamer {
             display: none;
             position: fixed;
             top: 0;
@@ -139,242 +106,94 @@
             height: 100vh;
             background: black;
             z-index: 9999;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0; /* Изначально невидимый */
-            transition: opacity 0.1s ease-out; /* Плавное появление */
         }
 
-        #screamer-overlay.active {
-            opacity: 1;
-        }
+        #screamer img { width: 100%; height: 100%; object-fit: cover; }
 
-        #screamer-overlay img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Заполняем весь экран */
-            display: block; /* Убираем лишние отступы */
-        }
+        .glitch-text { animation: glitch 1s linear infinite; }
 
-        /* Анимация фона для "красоты" */
-        .background-dots {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .dot {
-            position: absolute;
-            background: rgba(139, 233, 253, 0.1);
-            border-radius: 50%;
-            animation: moveDots 20s infinite linear alternate;
-        }
-
-        @keyframes moveDots {
-            0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
-            25% { transform: translate(20vw, 30vh) scale(1.2); opacity: 0.3; }
-            50% { transform: translate(50vw, -10vh) scale(0.8); opacity: 0.1; }
-            75% { transform: translate(80vw, 40vh) scale(1.5); opacity: 0.4; }
-            100% { transform: translate(100vw, 0) scale(1); opacity: 0.2; }
-        }
-
-        /* Адаптация для маленьких экранов */
-        @media (max-width: 600px) {
-            #game-container {
-                padding: 20px;
-                width: 100%;
-                border-radius: 0;
-            }
-            h1 { font-size: 1.8em; }
-            p { font-size: 1em; }
-            .game-button { padding: 12px 20px; font-size: 1em; margin: 5px; }
-            #screamer-overlay { background-color: black; } /* Убедимся, что фон чёрный */
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px,0) skew(0deg); }
+            4%, 60% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
         }
     </style>
 </head>
 <body>
 
-    <div class="background-dots"></div>
-
-    <div id="game-container">
-        <h1>Добро пожаловать в "Мир Спокойствия"!</h1>
-        <p id="game-description">Тебя ждет серия простых заданий на внимательность. Пройди все 5 уровней, чтобы доказать свою концентрацию!</p>
-        <div id="level-info">Уровень: <span id="current-level">1</span>/5</div>
-        <div id="button-container">
-            </div>
+    <div id="game-box">
+        <h1 class="glitch-text">Scanner 2026</h1>
+        <p class="rules">ПРАВИЛО: Жми на кнопку ТОЛЬКО когда она станет <span style="color:var(--neon-red)">КРАСНОЙ</span>. Пройди 5 циклов синхронизации.</p>
+        <div id="status">ЦИКЛ: <span id="lvl">1</span>/5</div>
+        
+        <div id="trigger"></div>
     </div>
 
-    <div id="screamer-overlay">
-        <img src="screamer.jpg" alt="Сюрприз!"> 
+    <div id="screamer">
+        <img src="screamer.jpg">
     </div>
 
     <audio id="scream-audio" src="scream.mp3" preload="auto"></audio>
 
     <script>
-        let currentLevel = 1;
-        const totalLevels = 5;
-        const levelInfo = document.getElementById('current-level');
-        const buttonContainer = document.getElementById('button-container');
-        const gameDescription = document.getElementById('game-description');
-        const screamerOverlay = document.getElementById('screamer-overlay');
-        const screamAudio = document.getElementById('scream-audio');
+        let level = 1;
+        let canClick = false;
+        let timer;
+        const btn = document.getElementById('trigger');
+        const lvlDisp = document.getElementById('lvl');
+        const audio = document.getElementById('scream-audio');
+        const screamer = document.getElementById('screamer');
 
-        const initialDescriptions = [
-            "Найди правильный символ, чтобы перейти дальше. Это очень просто!",
-            "Отлично! Теперь будь чуть быстрее. Символ меняется быстрее!",
-            "Продолжай в том же духе! Концентрация — ключ к успеху!",
-            "Почти финал! Последний рывок!",
-            "Это последний уровень! Внимание: символ появится всего на мгновение. Удачи!"
-        ];
-
-        const symbols = ['🟢', '🔵', '🔴', '🟡', '🟣']; // Используем эмодзи для простоты
-
-        function createDots() {
-            const numDots = 15;
-            const bgDots = document.querySelector('.background-dots');
-            for (let i = 0; i < numDots; i++) {
-                const dot = document.createElement('div');
-                dot.classList.add('dot');
-                dot.style.width = `${Math.random() * 50 + 20}px`;
-                dot.style.height = dot.style.width;
-                dot.style.left = `${Math.random() * 100}vw`;
-                dot.style.top = `${Math.random() * 100}vh`;
-                dot.style.animationDelay = `${Math.random() * 20}s`;
-                bgDots.appendChild(dot);
-            }
-        }
-        createDots();
-
-        function generateButtons(correctIndex) {
-            buttonContainer.innerHTML = '';
-            const numButtons = currentLevel < 5 ? 3 : 1; // 3 кнопки для 1-4, 1 кнопка для 5
-            const shuffledSymbols = shuffleArray([...symbols]);
-
-            for (let i = 0; i < numButtons; i++) {
-                const button = document.createElement('button');
-                button.classList.add('game-button');
-                button.textContent = shuffledSymbols[i];
-                button.dataset.index = shuffledSymbols.indexOf(symbols[correctIndex]); // Проверяем, какой символ правильный
-                
-                if (shuffledSymbols[i] === symbols[correctIndex]) {
-                    button.onclick = handleCorrectClick;
-                } else {
-                    button.onclick = handleIncorrectClick; // Просто для вида, не наказываем
-                }
-                buttonContainer.appendChild(button);
-            }
-
-            if (currentLevel === 5) {
-                // На 5 уровне делаем кнопку маленькой и в центре
-                const finalButton = document.querySelector('.game-button');
-                finalButton.style.width = '70px';
-                finalButton.style.height = '70px';
-                finalButton.style.borderRadius = '50%';
-                finalButton.style.fontSize = '1.8em';
-                finalButton.style.margin = 'auto'; // Центрируем
-                finalButton.textContent = '✅'; // Иконка завершения
-                gameDescription.textContent = "Поздравляем! Ты готов нажать кнопку завершения. Будь внимателен!";
-            }
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function handleCorrectClick() {
-            if (currentLevel < totalLevels) {
-                currentLevel++;
-                levelInfo.textContent = currentLevel;
-                gameDescription.textContent = initialDescriptions[currentLevel - 1];
-                nextLevel();
-            } else {
-                // Это последний уровень, активируем скример!
-                activateScreamer();
-            }
-        }
-
-        function handleIncorrectClick() {
-            // В этой "дружелюбной" игре неправильные клики не наказываются
-            // Можно добавить легкую вибрацию или "Неверно, попробуй еще!"
-            // Для наших целей, просто игнорируем
-            console.log("Неправильно, но это не страшно! :)");
-        }
-
-        function nextLevel() {
-            const correctSymbolIndex = Math.floor(Math.random() * symbols.length);
-            generateButtons(correctSymbolIndex);
-
-            // Анимация для 5 уровня, чтобы кнопка появлялась с задержкой
-            if (currentLevel === 5) {
-                buttonContainer.style.opacity = '0';
-                setTimeout(() => {
-                    buttonContainer.style.transition = 'opacity 0.8s ease-in-out';
-                    buttonContainer.style.opacity = '1';
-                }, 1000); // Появляется через 1 секунду
-            }
-        }
-
-        function activateScreamer() {
-            // Останавливаем все фоновые анимации и звуки
-            document.body.style.overflow = 'hidden';
-            document.getElementById('game-container').style.display = 'none';
-
-            // Убеждаемся, что аудио готово к воспроизведению
-            screamAudio.currentTime = 0; // Начинаем с начала
-            screamAudio.volume = 1.0; // Максимальная громкость
-
-            // Вибрация (работает на Android)
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 500]); // Длинная вибрация
-
-            screamerOverlay.style.display = 'flex'; // Показываем оверлей
-            // Добавляем класс для активации opacity-transition
-            setTimeout(() => { screamerOverlay.classList.add('active'); }, 10); 
+        function startCycle() {
+            canClick = false;
+            btn.classList.remove('active');
             
-            screamAudio.play().catch(e => {
-                console.error("Ошибка при воспроизведении звука:", e);
-                // На некоторых iOS устройствах звук может не воспроизвестись без прямого действия пользователя.
-                // Но так как это "игра", клики были, должно сработать.
-            });
-
-            // Запрос на полный экран для максимального эффекта
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) { /* IE11 */
-                document.documentElement.msRequestFullscreen();
-            }
+            // Рандомное время ожидания от 1 до 3 секунд
+            let waitTime = Math.random() * 2000 + 1000;
+            
+            timer = setTimeout(() => {
+                btn.classList.add('active');
+                canClick = true;
+                
+                // Нажатие должно быть быстрым
+                setTimeout(() => {
+                    if (canClick) {
+                        btn.classList.remove('active');
+                        canClick = false;
+                        if(level < 6) startCycle(); // Если не успел, пробуем снова
+                    }
+                }, 800 - (level * 100)); // С каждым уровнем время на клик меньше
+            }, waitTime);
         }
-        
-        // Превентивная загрузка аудио, чтобы не было задержки
-        window.addEventListener('load', () => {
-            screamAudio.load();
-            // Попытка "разбудить" аудио-контекст на iOS, если возможно, через немой звук
-            const silentAudio = new Audio();
-            silentAudio.src = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADGgAAA' + 
-                              'kAAf/uBgAAADFFTEFZRVJWaWRlbyBTb2Z0d2FyZQAAAAFlLMPAAADhAAAACmlDM1kAAAA' + 
-                              '2AAAAA0gAAADhEAAAAAAAAMyMEQwAAASgAAAADgG5mMHIAAAAMQAAABQAAEAAAMyMEQw' + 
-                              'AAASgAAAADgAAAABQAAB9FAAB24Cg+L+bQAAAACc3JjAAAAAAAAABAAAANuMDMgAAAAAAAA' + 
-                              'AAADMAAAAEQAAB4gAACDgAAJ+BAAAC/wAAEEiAAAKdAAAEP2AAALfQAAGJAAAAYYAACHQA' + 
-                              'AA/kAAAHNAAACjAAAAnBAAAE9wAAAQAAAAAAAQ=='; // silent mp3 data URI
-            silentAudio.play().catch(e => {}); // Пытаемся проиграть, игнорируем ошибки
+
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (canClick) {
+                clearTimeout(timer);
+                if (level < 5) {
+                    level++;
+                    lvlDisp.innerText = level;
+                    startCycle();
+                } else {
+                    // 5 уровень пройден -> СКРИМЕР
+                    activateScreamer();
+                }
+            } else {
+                // Если нажал раньше времени - сброс уровня (для азарта)
+                alert("ОШИБКА: Слишком рано!");
+                startCycle();
+            }
         });
 
+        function activateScreamer() {
+            if (navigator.vibrate) navigator.vibrate([500, 100, 500, 100, 800]);
+            screamer.style.display = 'block';
+            audio.play();
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
 
-        // Начинаем игру
-        nextLevel();
-
+        // Запуск первого уровня
+        startCycle();
     </script>
-
 </body>
 </html>
