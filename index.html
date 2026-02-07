@@ -3,197 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CYBER SCANNER v1.0</title>
+    <title>NEURAL CALIBRATION v.4.02</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-
-        :root {
-            --neon-blue: #00f3ff;
-            --neon-red: #ff003c;
-            --bg-dark: #050505;
-        }
-
         body {
             margin: 0;
-            background: var(--bg-dark);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
+            background-color: #0a0a0a;
+            color: #00ff41; /* Цвет хакерского терминала */
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            touch-action: manipulation;
+            text-transform: uppercase;
         }
 
-        /* Брутальный контейнер */
-        #game-box {
+        /* Эффект старого монитора */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        #ui-wrapper {
             width: 90%;
             max-width: 400px;
-            border: 2px solid var(--neon-blue);
-            padding: 40px 20px;
-            text-align: center;
-            background: rgba(0, 243, 255, 0.05);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.1);
+            border: 1px solid #00ff41;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        .header {
+            font-size: 12px;
+            border-bottom: 1px solid #00ff41;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #display {
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px inset #00ff41;
+            background: rgba(0, 255, 65, 0.05);
+            margin-bottom: 20px;
             position: relative;
         }
 
-        #game-box::before {
-            content: "SYSTEM ONLINE";
+        .scan-line {
             position: absolute;
-            top: -12px;
-            left: 20px;
-            background: var(--bg-dark);
-            padding: 0 10px;
-            font-size: 10px;
-            color: var(--neon-blue);
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 65, 0.3);
+            top: 0;
+            animation: scan 3s linear infinite;
         }
 
-        h1 {
-            font-size: 24px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px var(--neon-blue);
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
         }
 
-        .rules {
-            font-size: 12px;
-            color: #aaa;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        #status {
-            font-size: 18px;
-            margin-bottom: 40px;
-            color: var(--neon-blue);
-        }
-
-        /* Главная кнопка */
-        #trigger {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid #333;
-            background: #111;
-            cursor: pointer;
-            outline: none;
-            transition: 0.1s;
+        /* Кнопка-сканер */
+        #scanner-target {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #00ff41;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 auto;
+            cursor: pointer;
+            transition: 0.1s;
             position: relative;
-            box-shadow: 0 0 0 rgba(255, 0, 60, 0);
         }
 
-        #trigger.active {
-            background: var(--neon-red);
-            border-color: #ff6e8f;
-            box-shadow: 0 0 40px var(--neon-red);
+        #scanner-target:active {
+            background: rgba(0, 255, 65, 0.4);
+            box-shadow: 0 0 20px #00ff41;
         }
 
-        #trigger:active { transform: scale(0.95); }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            border: 1px solid #00ff41;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        #progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #00ff41;
+            transition: width 0.1s;
+        }
 
         /* Скример */
         #screamer {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: black;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000;
             z-index: 9999;
         }
-
         #screamer img { width: 100%; height: 100%; object-fit: cover; }
 
-        .glitch-text { animation: glitch 1s linear infinite; }
-
-        @keyframes glitch {
-            2%, 64% { transform: translate(2px,0) skew(0deg); }
-            4%, 60% { transform: translate(-2px,0) skew(0deg); }
-            62% { transform: translate(0,0) skew(5deg); }
-        }
+        .hint { font-size: 10px; color: #008f11; margin-top: 10px; text-align: center;}
     </style>
 </head>
 <body>
 
-    <div id="game-box">
-        <h1 class="glitch-text">Scanner 2026</h1>
-        <p class="rules">ПРАВИЛО: Жми на кнопку ТОЛЬКО когда она станет <span style="color:var(--neon-red)">КРАСНОЙ</span>. Пройди 5 циклов синхронизации.</p>
-        <div id="status">ЦИКЛ: <span id="lvl">1</span>/5</div>
+<div id="ui-wrapper">
+    <div class="header">
+        <span>ID: 77307-X</span>
+        <span>LEVEL: <span id="lvl-num">1</span>/5</span>
+    </div>
+
+    <div id="display">
+        <div class="scan-line"></div>
+        <div id="scanner-target">TAP</div>
+        <div class="hint" id="instruction">Нажмите для калибровки</div>
+    </div>
+
+    <div class="progress-bar">
+        <div id="progress-fill"></div>
+    </div>
+    <div class="hint" style="margin-top: 5px;">Data Synchronization: <span id="percent">0</span>%</div>
+</div>
+
+<div id="screamer">
+    <img src="screamer.jpg">
+</div>
+
+<audio id="scream-audio" src="scream.mp3" preload="auto"></audio>
+
+<script>
+    let level = 1;
+    let progress = 0;
+    let isScanning = false;
+    let scanInterval;
+
+    const btn = document.getElementById('scanner-target');
+    const fill = document.getElementById('progress-fill');
+    const percentTxt = document.getElementById('percent');
+    const lvlTxt = document.getElementById('lvl-num');
+    const instr = document.getElementById('instruction');
+    const audio = document.getElementById('scream-audio');
+    const screamer = document.getElementById('screamer');
+
+    // Логика игры
+    function updateLevel() {
+        level++;
+        if (level > 5) return;
         
-        <div id="trigger"></div>
-    </div>
+        lvlTxt.innerText = level;
+        progress = 0;
+        fill.style.width = '0%';
+        percentTxt.innerText = '0';
 
-    <div id="screamer">
-        <img src="screamer.jpg">
-    </div>
-
-    <audio id="scream-audio" src="scream.mp3" preload="auto"></audio>
-
-    <script>
-        let level = 1;
-        let canClick = false;
-        let timer;
-        const btn = document.getElementById('trigger');
-        const lvlDisp = document.getElementById('lvl');
-        const audio = document.getElementById('scream-audio');
-        const screamer = document.getElementById('screamer');
-
-        function startCycle() {
-            canClick = false;
-            btn.classList.remove('active');
-            
-            // Рандомное время ожидания от 1 до 3 секунд
-            let waitTime = Math.random() * 2000 + 1000;
-            
-            timer = setTimeout(() => {
-                btn.classList.add('active');
-                canClick = true;
-                
-                // Нажатие должно быть быстрым
-                setTimeout(() => {
-                    if (canClick) {
-                        btn.classList.remove('active');
-                        canClick = false;
-                        if(level < 6) startCycle(); // Если не успел, пробуем снова
-                    }
-                }, 800 - (level * 100)); // С каждым уровнем время на клик меньше
-            }, waitTime);
+        if (level === 5) {
+            btn.innerText = "HOLD";
+            instr.innerText = "ЗАЖМИТЕ ДЛЯ ПОЛНОГО СКАНИРОВАНИЯ";
+            instr.style.color = "#ff0000";
         }
+    }
 
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (canClick) {
-                clearTimeout(timer);
-                if (level < 5) {
-                    level++;
-                    lvlDisp.innerText = level;
-                    startCycle();
-                } else {
-                    // 5 уровень пройден -> СКРИМЕР
-                    activateScreamer();
-                }
-            } else {
-                // Если нажал раньше времени - сброс уровня (для азарта)
-                alert("ОШИБКА: Слишком рано!");
-                startCycle();
+    // Обработка нажатий
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (level < 5) {
+            // Первые 4 уровня — просто клики, которые прибавляют прогресс
+            progress += 25;
+            fill.style.width = progress + '%';
+            percentTxt.innerText = progress;
+            if (progress >= 100) {
+                setTimeout(updateLevel, 200);
             }
-        });
-
-        function activateScreamer() {
-            if (navigator.vibrate) navigator.vibrate([500, 100, 500, 100, 800]);
-            screamer.style.display = 'block';
-            audio.play();
-            document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+            // 5 уровень — нужно держать!
+            isScanning = true;
+            scanInterval = setInterval(() => {
+                if (progress < 98) {
+                    progress += 1;
+                    fill.style.width = progress + '%';
+                    percentTxt.innerText = progress;
+                } else if (progress === 98) {
+                    // Замираем на 98%, чтобы он придвинулся к экрану
+                    clearInterval(scanInterval);
+                    setTimeout(() => {
+                        activateScreamer();
+                    }, 1500); // Задержка перед смертью
+                }
+            }, 50);
         }
+    });
 
-        // Запуск первого уровня
-        startCycle();
-    </script>
+    btn.addEventListener('touchend', () => {
+        if (level === 5 && isScanning) {
+            clearInterval(scanInterval);
+            isScanning = false;
+            if (progress < 98) {
+                progress = 0;
+                fill.style.width = '0%';
+                percentTxt.innerText = '0';
+                alert("СКАНИРОВАНИЕ ПРЕРВАНО. ДЕРЖИТЕ ДО КОНЦА!");
+            }
+        }
+    });
+
+    function activateScreamer() {
+        if (navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
+        screamer.style.display = 'block';
+        audio.play().catch(e => console.log("Sound error:", e));
+        
+        // Попытка войти в фуллскрин
+        const doc = document.documentElement;
+        if (doc.requestFullscreen) doc.requestFullscreen();
+        else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+    }
+</script>
+
 </body>
 </html>
