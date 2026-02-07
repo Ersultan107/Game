@@ -3,76 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEON MAZE: SHAKE EDITION</title>
+    <title>NEON SENSE: IMMERSIVE</title>
     <style>
-        :root { --neon: #00f3ff; --bg: #050508; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; font-family: sans-serif; }
-        canvas { display: block; }
-        
-        #ui { position: absolute; top: 30px; width: 100%; text-align: center; color: var(--neon); letter-spacing: 3px; z-index: 10; pointer-events: none; text-shadow: 0 0 8px var(--neon); }
-        
-        #joy-outer { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(5px); z-index: 10; }
-        #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 20px var(--neon); }
-        
-        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
-        .start-btn { padding: 15px 40px; background: transparent; border: 1px solid var(--neon); color: var(--neon); cursor: pointer; text-transform: uppercase; font-weight: bold; margin-top: 20px; box-shadow: 0 0 10px var(--neon); }
-
-        /* СКРИМЕР И БЕШЕНАЯ ТРЯСКА */
-        #screamer { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            background: black; 
-            z-index: 9999; 
-            overflow: hidden;
+        :root { 
+            --neon: #00f3ff; 
+            --bg: #020205; 
+            --danger: #ff0055; 
+            --accent: #bc13fe;
         }
-        #screamer img { 
-            width: 110%; /* Чуть больше экрана, чтобы при тряске не было пустых краев */
-            height: 110%; 
-            object-fit: cover; 
-            position: absolute;
-            top: -5%;
-            left: -5%;
+        
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg); overflow: hidden; touch-action: none; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
-        .shake-active { 
-            animation: ultimate-shake 0.1s infinite; 
+        /* Эффект погружения - виньетка */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none; z-index: 5;
         }
 
+        canvas { display: block; z-index: 1; }
+        
+        /* Интерфейс */
+        #ui { 
+            position: absolute; top: 40px; width: 100%; text-align: center; 
+            color: var(--neon); letter-spacing: 5px; z-index: 10; 
+            font-weight: 200; text-shadow: 0 0 15px var(--neon);
+            text-transform: uppercase; font-size: 12px;
+        }
+        
+        /* Стеклянный джойстик */
+        #joy-outer { 
+            position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
+            width: 110px; height: 110px; border: 1px solid rgba(0, 243, 255, 0.15); 
+            border-radius: 50%; background: rgba(255,255,255,0.02); 
+            backdrop-filter: blur(10px); z-index: 10;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        #joy-stick { 
+            position: absolute; top: 30px; left: 30px; width: 50px; height: 50px; 
+            background: linear-gradient(135deg, #fff, var(--neon)); 
+            border-radius: 50%; box-shadow: 0 0 25px var(--neon);
+        }
+        
+        /* Стартовый экран */
+        #start-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 100; display: flex; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            color: white; text-align: center; transition: 0.8s ease;
+        }
+
+        .title { font-size: 32px; font-weight: 100; letter-spacing: 15px; margin-bottom: 10px; }
+        .title span { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
+
+        .start-btn { 
+            padding: 18px 50px; background: transparent; 
+            border: 1px solid rgba(0, 243, 255, 0.4); color: white; 
+            cursor: pointer; text-transform: uppercase; font-weight: 300; 
+            margin-top: 40px; letter-spacing: 4px; transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .start-btn:active { background: var(--neon); color: black; box-shadow: 0 0 30px var(--neon); }
+
+        /* Скример */
+        #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
+        #screamer img { width: 130%; height: 130%; object-fit: cover; position: absolute; top: -15%; left: -15%; }
+        
+        .shake-active { animation: ultimate-shake 0.08s infinite; }
         @keyframes ultimate-shake {
-            0% { transform: translate(0,0) rotate(0deg); }
-            10% { transform: translate(-10px, -5px) rotate(-1deg); }
-            20% { transform: translate(10px, 5px) rotate(1deg); }
-            30% { transform: translate(-5px, 10px) rotate(0deg); }
-            40% { transform: translate(5px, -10px) rotate(1deg); }
-            50% { transform: translate(-10px, 2px) rotate(-1deg); }
-            60% { transform: translate(8px, 8px) rotate(0deg); }
-            70% { transform: translate(-8px, -8px) rotate(-1deg); }
-            80% { transform: translate(10px, -2px) rotate(1deg); }
-            90% { transform: translate(-5px, 5px) rotate(0deg); }
-            100% { transform: translate(0,0) rotate(0deg); }
+            0% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-15px, 15px) scale(1.05); }
+            100% { transform: translate(15px, -15px) scale(1); }
         }
     </style>
 </head>
 <body>
 
-<div id="ui">LEVEL: <span id="lvl">1</span> / 5</div>
+<div id="ui">Sync Path: <span id="lvl">1</span> / 3</div>
 
 <div id="start-screen">
-    <div style="letter-spacing: 10px; font-size: 30px; font-weight: bold;">NEON <span style="color:var(--neon)">MAZE</span></div>
-    <div style="color: #ff3e3e; font-size: 11px; margin-top: 25px; font-weight: bold; animation: blink 1s infinite;">⚠️ ВЫКЛЮЧИ БЕЗЗВУЧНЫЙ РЕЖИМ ⚠️</div>
-    <button class="start-btn" id="goBtn">ИНИЦИАЛИЗАЦИЯ</button>
+    <div class="title">NEON<span>SENSE</span></div>
+    <div style="opacity: 0.4; font-size: 10px; letter-spacing: 2px;">VIRTUAL CALIBRATION SYSTEM</div>
+    <div style="color: var(--danger); font-size: 11px; margin-top: 40px; letter-spacing: 1px;">⚠️ ВНИМАНИЕ: НЕ КАСАЙТЕСЬ ГРАНИЦ ⚠️</div>
+    <button class="start-btn" id="goBtn">Инициализация</button>
 </div>
 
 <canvas id="game"></canvas>
 <div id="joy-outer"><div id="joy-stick"></div></div>
-
-<div id="screamer">
-    <img src="77307.jpg" id="scImg">
-</div>
+<div id="screamer"><img src="77307.jpg"></div>
 
 <audio id="bgm" src="bg-music.mp3" loop></audio>
 <audio id="scm" src="scream.mp3"></audio>
@@ -83,35 +105,36 @@
     const joyStick = document.getElementById('joy-stick');
     
     let level = 1, cellSize, offX, offY, gameActive = false;
-    let player = { x: 0, y: 0 };
+    let player = { x: 0, y: 0, r: 7 };
     let finish = { x: 0, y: 0 };
     let walls = [], joy = { x: 0, y: 0, active: false };
 
     const maps = [
-        [[1,1,1,1,1,1],[1,2,0,0,3,1],[1,1,1,1,1,1]],
-        [[1,1,1,1,1],[1,2,1,3,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]],
-        [[1,1,1,1,1,1],[1,2,0,0,0,1],[1,1,1,1,0,1],[1,3,0,0,0,1],[1,1,1,1,1,1]],
-        [[1,1,1,1,1,1,1],[1,2,0,1,0,0,1],[1,1,0,1,0,1,1],[1,0,0,0,0,3,1],[1,1,1,1,1,1,1]],
-        [[1,1,1,1,1,1,1],[1,2,0,0,0,0,1],[1,1,1,1,1,0,1],[1,3,0,0,0,0,1],[1,1,1,1,1,1,1]]
+        [[1,1,1,1,1,1,1,1],[1,2,0,0,0,0,3,1],[1,1,1,1,1,1,1,1]],
+        [[1,1,1,1,1,1,1],[1,2,0,1,1,1,1],[1,1,0,0,0,3,1],[1,1,1,1,1,1,1]],
+        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,0,1,0,0,0,0,1],[1,1,1,0,1,0,1,1,0,1],[1,0,0,0,0,0,1,3,0,1],[1,1,1,1,1,1,1,1,1,1]]
     ];
 
     document.getElementById('goBtn').addEventListener('click', function() {
-        bgm.play().catch(()=>{});
-        scm.load(); // Предзагрузка без звука
-        document.getElementById('start-screen').style.display = 'none';
-        gameActive = true;
-        init();
-        loop();
+        bgm.play(); scm.load();
+        document.getElementById('start-screen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('start-screen').style.display = 'none';
+            gameActive = true;
+            init();
+            loop();
+        }, 800);
     });
 
     function init() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         const m = maps[level-1];
-        cellSize = Math.min(canvas.width / (m[0].length + 1), canvas.height / (m.length + 4));
+        cellSize = Math.min(canvas.width / (m[0].length + 1), canvas.height / (m.length + 5));
         walls = [];
         offX = (canvas.width - m[0].length * cellSize) / 2;
-        offY = (canvas.height - m.length * cellSize) / 2;
+        offY = (canvas.height - m.length * cellSize) / 2.2;
+
         for(let y=0; y<m.length; y++) {
             for(let x=0; x<m[y].length; x++) {
                 let px = offX + x * cellSize, py = offY + y * cellSize;
@@ -122,49 +145,95 @@
         }
     }
 
+    // Управление
     window.addEventListener('touchstart', e => { 
         const t = e.touches[0], r = document.getElementById('joy-outer').getBoundingClientRect();
-        if(Math.hypot(t.clientX - (r.left+50), t.clientY - (r.top+50)) < 60) joy.active = true;
+        if(Math.hypot(t.clientX - (r.left+55), t.clientY - (r.top+55)) < 70) joy.active = true;
     });
 
     window.addEventListener('touchmove', e => {
         if(!joy.active) return;
         const t = e.touches[0], r = document.getElementById('joy-outer').getBoundingClientRect();
-        let dx = t.clientX - (r.left+50), dy = t.clientY - (r.top+50);
+        let dx = t.clientX - (r.left+55), dy = t.clientY - (r.top+55);
         const d = Math.hypot(dx, dy);
-        if(d > 30) { dx *= 30/d; dy *= 30/d; }
+        if(d > 40) { dx *= 40/d; dy *= 40/d; }
         joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 7; joy.y = dy / 7;
+        joy.x = dx / 18; joy.y = dy / 18; // Плавное, вязкое управление
     });
 
-    window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; joyStick.style.transform = 'translate(0,0)'; });
+    window.addEventListener('touchend', () => { 
+        joy.active = false; joy.x = 0; joy.y = 0; 
+        joyStick.style.transform = 'translate(0,0)'; 
+    });
+
+    function drawGrid() {
+        ctx.strokeStyle = 'rgba(0, 243, 255, 0.03)';
+        ctx.lineWidth = 1;
+        for(let i=0; i<canvas.width; i+=30) {
+            ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke();
+        }
+        for(let i=0; i<canvas.height; i+=30) {
+            ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke();
+        }
+    }
 
     function loop() {
         if(!gameActive) return;
+        
         if(joy.active) {
-            let nx = player.x + joy.x, ny = player.y + joy.y, hit = false;
-            walls.forEach(w => { if(nx+8 > w.x && nx-8 < w.x+w.w && ny+8 > w.y && ny-8 < w.y+w.h) hit = true; });
-            if(!hit) { player.x = nx; player.y = ny; }
+            player.x += joy.x; player.y += joy.y;
+            walls.forEach(w => {
+                if(player.x+player.r > w.x && player.x-player.r < w.x+w.w && 
+                   player.y+player.r > w.y && player.y-player.r < w.y+w.h) triggerScreamer();
+            });
         }
-        ctx.fillStyle = '#050508'; ctx.fillRect(0,0,canvas.width, canvas.height);
-        walls.forEach(w => { ctx.strokeStyle = 'rgba(0, 243, 255, 0.4)'; ctx.strokeRect(w.x+2, w.y+2, w.w-4, w.h-4); });
-        ctx.fillStyle = '#ff00ff'; ctx.beginPath(); ctx.arc(finish.x, finish.y, cellSize/5, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(player.x, player.y, 8, 0, Math.PI*2); ctx.fill();
+
+        ctx.fillStyle = varColor('--bg');
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+        
+        drawGrid();
+
+        // Стены
+        walls.forEach(w => {
+            // Внешнее свечение стен
+            ctx.shadowBlur = 5; ctx.shadowColor = 'rgba(0, 243, 255, 0.2)';
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.1)';
+            ctx.strokeRect(w.x, w.y, w.w, w.h);
+            
+            // Внутренний блик
+            ctx.fillStyle = 'rgba(0, 243, 255, 0.02)';
+            ctx.fillRect(w.x+1, w.y+1, w.w-2, w.h-2);
+        });
+
+        // Финиш (Пульсирующий)
+        const pulse = 10 + Math.sin(Date.now()/200) * 5;
+        ctx.shadowBlur = pulse; ctx.shadowColor = '#ff00ff';
+        ctx.fillStyle = '#ff00ff';
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, cellSize/5, 0, Math.PI*2); ctx.fill();
+
+        // Игрок
+        ctx.shadowBlur = 15; ctx.shadowColor = varColor('--neon');
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
 
         if(Math.hypot(player.x - finish.x, player.y - finish.y) < 15) {
-            if(level < 5) { level++; document.getElementById('lvl').innerText = level; init(); } 
-            else { 
-                gameActive = false;
-                bgm.pause();
-                scm.currentTime = 0;
-                scm.play();
-                const sc = document.getElementById('screamer');
-                sc.style.display = 'block';
-                sc.classList.add('shake-active'); // ЗАПУСК ТРЯСКИ
-                if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
-            }
+            if(level < 3) { level++; document.getElementById('lvl').innerText = level; init(); } 
+            else { triggerScreamer(); }
         }
         requestAnimationFrame(loop);
+    }
+
+    function varColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name); }
+
+    function triggerScreamer() {
+        if(!gameActive) return;
+        gameActive = false;
+        bgm.pause(); scm.play();
+        const sc = document.getElementById('screamer');
+        sc.style.display = 'block';
+        sc.classList.add('shake-active');
+        if(navigator.vibrate) navigator.vibrate([800, 200, 800]);
     }
 </script>
 </body>
