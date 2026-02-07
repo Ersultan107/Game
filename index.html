@@ -3,73 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neural Maze</title>
+    <title>Neural Path</title>
     <style>
-        :root {
-            --primary: #ff4d94;
-            --bg: #0a0510;
-        }
+        :root { --primary: #ff4d94; --bg: #0a0510; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; font-family: -apple-system, sans-serif; }
         
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--bg); overflow: hidden; touch-action: none; 
-            font-family: -apple-system, system-ui, sans-serif;
-        }
+        /* Фон с градиентом из твоего примера */
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 30%, #1a0820 0%, #0a0510 80%); z-index: 0; }
 
-        .bg-glow {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 30%, #1a0820 0%, #0a0510 80%);
-            z-index: 0;
-        }
-
-        #ui { 
-            position: absolute; top: 50px; width: 100%; text-align: center; 
-            color: white; opacity: 0.4; font-weight: 200; letter-spacing: 4px;
-            z-index: 10; font-size: 11px; text-transform: uppercase;
-        }
+        #ui { position: absolute; top: 50px; width: 100%; text-align: center; color: white; opacity: 0.5; letter-spacing: 3px; z-index: 10; font-size: 12px; text-transform: uppercase; }
         
-        #joy-outer { 
-            position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
-            width: 100px; height: 100px; border-radius: 50%; 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px); z-index: 10;
-        }
-        #joy-stick { 
-            position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; 
-            background: white; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        }
+        #joy-outer { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); z-index: 10; }
+        #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         
-        #start-screen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg); z-index: 100; display: flex; 
-            flex-direction: column; align-items: center; justify-content: center; 
-            transition: 0.5s ease;
-        }
-
-        h1 { color: white; font-size: 24px; font-weight: 200; letter-spacing: 8px; margin-bottom: 10px; text-transform: uppercase; }
-        .sub { color: var(--primary); font-size: 10px; letter-spacing: 3px; margin-bottom: 50px; opacity: 0.8; }
-
-        .btn-start { 
-            padding: 16px 50px; background: white; border: none; border-radius: 2px;
-            color: black; font-size: 14px; font-weight: bold; cursor: pointer;
-            letter-spacing: 2px; text-transform: uppercase;
-        }
+        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        h1 { color: white; font-size: 26px; font-weight: 200; letter-spacing: 5px; margin-bottom: 40px; }
+        .btn-start { padding: 16px 60px; background: white; border: none; border-radius: 30px; color: black; font-size: 15px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
         #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
-        #screamer img { width: 130%; height: 130%; object-fit: cover; position: absolute; top: -15%; left: -15%; }
-        
-        .shake { animation: sh 0.06s infinite; }
+        #screamer img { width: 140%; height: 140%; object-fit: cover; position: absolute; top: -20%; left: -20%; }
+        .shake { animation: sh 0.05s infinite; }
         @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-15px, 15px)} 100% {transform: translate(15px, -15px)} }
     </style>
 </head>
 <body>
 
 <div class="bg-glow"></div>
-<div id="ui">Node: <span id="lvl">1</span> / 5</div>
+<div id="ui">УЗЕЛ: <span id="lvl">1</span> / 5</div>
 
 <div id="start-screen">
     <h1>Neural Link</h1>
-    <div class="sub">System Calibration</div>
     <button class="btn-start" onclick="initGame()">Connect</button>
 </div>
 
@@ -85,9 +48,10 @@
     const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
     const stick = document.getElementById('joy-stick');
     
-    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:7}, finish = {x:0, y:0};
+    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:8}, finish = {x:0, y:0};
     let joy = {x:0, y:0, active:false}, cellSize;
 
+    // Карты уровней (1 - стена, 2 - игрок, 3 - финиш)
     const maps = [
         [[1,1,1,1,1,1,1],[1,2,0,0,0,3,1],[1,1,1,1,1,1,1]],
         [[1,1,1,1,1,1,1],[1,2,0,1,0,3,1],[1,1,0,1,0,1,1],[1,1,0,0,0,1,1],[1,1,1,1,1,1,1]],
@@ -95,14 +59,14 @@
     ];
 
     function initGame() {
-        bgm.play().catch(()=>{}); scm.load();
-        document.getElementById('start-screen').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('start-screen').style.display = 'none';
-            gameActive = true;
-            setupLevel();
-            requestAnimationFrame(update);
-        }, 500);
+        // РАЗБЛОКИРОВКА ЗВУКА ДЛЯ IPHONE
+        bgm.play().catch(()=>{}); 
+        scm.load(); // Предзагрузка скримера
+        
+        document.getElementById('start-screen').style.display = 'none';
+        gameActive = true;
+        setupLevel();
+        requestAnimationFrame(update);
     }
 
     function setupLevel() {
@@ -112,7 +76,7 @@
         cellSize = Math.min(cvs.width / (m[0].length + 1), cvs.height / (m.length + 6));
         walls = [];
         let ox = (cvs.width - m[0].length * cellSize) / 2;
-        let oy = (cvs.height - m.length * cellSize) / 2;
+        let oy = (cvs.height - m.length * cellSize) / 2.5;
 
         for(let y=0; y<m.length; y++) {
             for(let x=0; x<m[y].length; x++) {
@@ -138,7 +102,7 @@
         const dist = Math.hypot(dx, dy);
         if(dist > 35) { dx *= 35/dist; dy *= 35/dist; }
         stick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 16; joy.y = dy / 16;
+        joy.x = dx / 15; joy.y = dy / 15;
     });
 
     window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; stick.style.transform = 'translate(0,0)'; });
@@ -150,9 +114,10 @@
             player.x += joy.x;
             player.y += joy.y;
             
+            // ПРОВЕРКА КАСАНИЯ СТЕН
             for(let w of walls) {
-                if(player.x+player.r-2 > w.x && player.x-player.r+2 < w.x+w.w && 
-                   player.y+player.r-2 > w.y && player.y-player.r+2 < w.y+w.h) {
+                if(player.x+player.r-3 > w.x && player.x-player.r+3 < w.x+w.w && 
+                   player.y+player.r-3 > w.y && player.y-player.r+3 < w.y+w.h) {
                     gameOver(); return;
                 }
             }
@@ -160,18 +125,26 @@
 
         ctx.clearRect(0, 0, cvs.width, cvs.height);
 
+        // ОТРИСОВКА ВИДИМЫХ СТЕН
         walls.forEach(w => {
-            ctx.strokeStyle = 'rgba(255, 77, 148, 0.2)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(w.x+5, w.y+5, w.w-10, w.h-10);
+            ctx.fillStyle = 'rgba(255, 77, 148, 0.1)'; // Фон стен
+            ctx.strokeStyle = 'rgba(255, 77, 148, 0.4)'; // Контур стен
+            ctx.lineWidth = 2;
+            
+            // Рисуем блок стены
+            ctx.beginPath();
+            ctx.roundRect(w.x+2, w.y+2, w.w-4, w.h-4, 8);
+            ctx.fill();
+            ctx.stroke();
         });
 
-        // Finish
+        // Финиш (Розовая точка)
         ctx.fillStyle = '#ff4d94';
         ctx.shadowBlur = 15; ctx.shadowColor = '#ff4d94';
-        ctx.beginPath(); ctx.arc(finish.x, finish.y, 8, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, 10, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
 
-        // Player
+        // Игрок (Белая точка)
         ctx.fillStyle = 'white';
         ctx.shadowBlur = 10; ctx.shadowColor = 'white';
         ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill();
@@ -187,11 +160,20 @@
     function gameOver() {
         if(!gameActive) return;
         gameActive = false;
-        bgm.pause(); scm.play();
+        bgm.pause();
+        scm.currentTime = 0;
+        scm.play(); // Скример!
         const sc = document.getElementById('screamer');
         sc.style.display = 'block';
         sc.classList.add('shake');
         if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
+    }
+
+    // Фикс для старых браузеров
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+            this.rect(x,y,w,h); return this;
+        };
     }
 </script>
 </body>
