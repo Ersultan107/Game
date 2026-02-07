@@ -3,43 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neural Path</title>
+    <title>Neural Maze</title>
     <style>
         :root { --primary: #ff4d94; --bg: #0a0510; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; }
-        
         canvas { display: block; position: absolute; top: 0; left: 0; z-index: 2; }
-
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 30%, #1a0820 0%, #0a0510 80%); z-index: 1; }
-
-        #ui { position: absolute; top: 50px; width: 100%; text-align: center; color: white; opacity: 0.8; letter-spacing: 3px; z-index: 10; font-size: 14px; text-transform: uppercase; text-shadow: 0 0 10px var(--primary); }
-        
-        #joy-outer { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid var(--primary); backdrop-filter: blur(10px); z-index: 10; }
-        #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 20px var(--primary); }
-        
+        #ui { position: absolute; top: 40px; width: 100%; text-align: center; color: white; opacity: 0.6; letter-spacing: 3px; z-index: 10; font-family: sans-serif; font-size: 12px; }
+        #joy-outer { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); z-index: 10; }
+        #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 15px var(--primary); }
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-start { padding: 18px 60px; background: white; border: none; border-radius: 30px; color: black; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px var(--primary); }
-
+        .btn-start { padding: 15px 50px; background: white; border: none; border-radius: 5px; color: black; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
-        #screamer img { width: 140%; height: 140%; object-fit: cover; position: absolute; top: -20%; left: -20%; }
-        .shake { animation: sh 0.05s infinite; }
-        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-15px, 15px)} 100% {transform: translate(15px, -15px)} }
+        #screamer img { width: 150%; height: 150%; object-fit: cover; position: absolute; top: -25%; left: -25%; }
+        .shake { animation: sh 0.04s infinite; }
+        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-25px, 25px)} 100% {transform: translate(25px, -25px)} }
     </style>
 </head>
 <body>
-
 <div class="bg-glow"></div>
-<div id="ui">LEVEL: <span id="lvl">1</span> / 5</div>
-
+<div id="ui">NEURAL LINK: NODE <span id="lvl">1</span> / 3</div>
 <div id="start-screen">
-    <h1 style="color:white; font-weight:200; letter-spacing:10px; margin-bottom:40px;">NEURAL PATH</h1>
-    <button class="btn-start" onclick="initGame()">Connect</button>
+    <h1 style="color:white; font-weight:100; letter-spacing:8px;">SYSTEM CHECK</h1>
+    <button class="btn-start" onclick="initGame()">Start</button>
 </div>
-
 <canvas id="stage"></canvas>
 <div id="joy-outer"><div id="joy-stick"></div></div>
 <div id="screamer"><img src="77307.jpg"></div>
-
 <audio id="bgm" src="bg-music.mp3" loop></audio>
 <audio id="scm" src="scream.mp3"></audio>
 
@@ -47,36 +37,41 @@
     const cvs = document.getElementById('stage'), ctx = cvs.getContext('2d');
     const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
     const stick = document.getElementById('joy-stick');
-    
-    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:10}, finish = {x:0, y:0};
-    let joy = {x:0, y:0, active:false}, cellSize;
+    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:6}, finish = {x:0, y:0}, joy = {x:0, y:0, active:false}, cellSize;
 
+    // Карты 10x10. 1-стена, 2-старт, 3-финиш
     const maps = [
-        [[1,1,1,1,1],[1,2,0,3,1],[1,1,1,1,1]], // Уровень 1 (очень простой для теста)
-        [[1,1,1,1,1,1,1],[1,2,0,1,0,3,1],[1,1,0,1,0,1,1],[1,1,1,1,1,1,1]],
-        [[1,1,1,1,1,1,1,1],[1,2,0,0,0,1,3,1],[1,1,1,1,0,1,1,1],[1,1,1,1,1,1,1,1]]
+        // Уровень 1: Безопасный и простой
+        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,0,0,0,0,0,3,1],[1,1,1,1,1,1,1,1,1,1]],
+        // Уровень 2: Безопасный, но длиннее
+        [[1,1,1,1,1,1,1,1,1,1],[1,2,0,1,0,0,1,0,0,1],[1,0,0,1,0,0,1,0,3,1],[1,1,1,1,1,1,1,1,1,1]],
+        // Уровень 3: ЛОВУШКА! Реальный лабиринт 10x10
+        [
+            [1,1,1,1,1,1,1,1,1,1],
+            [1,2,0,0,1,0,0,0,0,1],
+            [1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,1],
+            [1,0,1,1,1,1,1,0,1,1],
+            [1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,0,1,3,0,1],
+            [1,1,1,1,1,1,1,1,1,1]
+        ]
     ];
 
     function initGame() {
-        bgm.play().catch(()=>{}); 
-        scm.load();
+        bgm.play().catch(()=>{}); scm.load();
         document.getElementById('start-screen').style.display = 'none';
-        gameActive = true;
-        setupLevel();
-        loop();
+        gameActive = true; setupLevel(); loop();
     }
 
     function setupLevel() {
-        cvs.width = window.innerWidth;
-        cvs.height = window.innerHeight;
+        cvs.width = window.innerWidth; cvs.height = window.innerHeight;
         const m = maps[Math.min(level-1, maps.length-1)];
-        
-        // Масштабируем так, чтобы лабиринт был крупным
-        cellSize = Math.floor(Math.min(cvs.width / (m[0].length + 1), cvs.height / (m.length + 5)));
+        cellSize = Math.floor(Math.min(cvs.width / (m[0].length + 1), cvs.height / 12));
         walls = [];
-        
         let ox = (cvs.width - m[0].length * cellSize) / 2;
-        let oy = (cvs.height - m.length * cellSize) / 2;
+        let oy = (cvs.height - m.length * cellSize) / 2.5;
 
         for(let y=0; y<m.length; y++) {
             for(let x=0; x<m[y].length; x++) {
@@ -88,79 +83,58 @@
         }
     }
 
-    // Управление
-    window.addEventListener('touchstart', e => { 
-        const r = document.getElementById('joy-outer').getBoundingClientRect();
-        const t = e.touches[0];
-        if(Math.hypot(t.clientX - (r.left+50), t.clientY - (r.top+50)) < 70) joy.active = true;
-    });
-
+    window.addEventListener('touchstart', e => { joy.active = true; });
     window.addEventListener('touchmove', e => {
         if(!joy.active) return;
         const r = document.getElementById('joy-outer').getBoundingClientRect();
         const t = e.touches[0];
         let dx = t.clientX - (r.left+50), dy = t.clientY - (r.top+50);
         const dist = Math.hypot(dx, dy);
-        if(dist > 40) { dx *= 40/dist; dy *= 40/dist; }
+        if(dist > 35) { dx *= 35/dist; dy *= 35/dist; }
         stick.style.transform = `translate(${dx}px, ${dy}px)`;
         joy.x = dx / 12; joy.y = dy / 12;
     });
-
     window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; stick.style.transform = 'translate(0,0)'; });
 
     function loop() {
         if(!gameActive) return;
-        
-        if(joy.active) {
-            player.x += joy.x;
-            player.y += joy.y;
-            
-            // ПРОВЕРКА КАСАНИЯ (уменьшил зону поражения для комфорта)
+        player.x += joy.x; player.y += joy.y;
+
+        // ЛОВУШКА: Проверка стен только на 3 уровне
+        if(level === 3) {
             for(let w of walls) {
-                if(player.x+4 > w.x && player.x-4 < w.x+w.w && 
-                   player.y+4 > w.y && player.y-4 < w.y+w.h) {
+                if(player.x+3 > w.x && player.x-3 < w.x+w.w && player.y+3 > w.y && player.y-3 < w.y+w.h) {
                     gameOver(); return;
                 }
             }
         }
 
         ctx.clearRect(0, 0, cvs.width, cvs.height);
-
-        // Рисуем стены СВЕТЯЩИМИСЯ
         walls.forEach(w => {
-            ctx.shadowBlur = 10; ctx.shadowColor = '#ff4d94';
-            ctx.strokeStyle = '#ff4d94';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(w.x+5, w.y+5, w.w-10, w.h-10);
-            
-            ctx.fillStyle = 'rgba(255, 77, 148, 0.2)';
-            ctx.fillRect(w.x+5, w.y+5, w.w-10, w.h-10);
+            ctx.strokeStyle = 'rgba(255, 77, 148, 0.3)';
+            ctx.strokeRect(w.x+2, w.y+2, w.w-4, w.h-4);
         });
 
         // Финиш
-        ctx.shadowBlur = 20; ctx.shadowColor = '#00f3ff';
-        ctx.fillStyle = '#00f3ff';
-        ctx.beginPath(); ctx.arc(finish.x, finish.y, 12, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ff4d94';
+        ctx.shadowBlur = 15; ctx.shadowColor = '#ff4d94';
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, 8, 0, Math.PI*2); ctx.fill();
 
-        // Персонаж (ЯРКИЙ)
-        ctx.shadowBlur = 25; ctx.shadowColor = 'white';
+        // Игрок
         ctx.fillStyle = 'white';
+        ctx.shadowBlur = 15; ctx.shadowColor = 'white';
         ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill();
         ctx.shadowBlur = 0;
 
-        if(Math.hypot(player.x - finish.x, player.y - finish.y) < 20) {
+        if(Math.hypot(player.x - finish.x, player.y - finish.y) < 15) {
             if(level < 3) { level++; document.getElementById('lvl').innerText = level; setupLevel(); }
-            else { gameOver(); }
+            else { /* Если прошел 3-й (почти нереально) */ gameOver(); }
         }
         requestAnimationFrame(loop);
     }
 
     function gameOver() {
-        if(!gameActive) return;
-        gameActive = false;
-        bgm.pause();
-        scm.currentTime = 0;
-        scm.play();
+        gameActive = false; bgm.pause(); scm.currentTime = 0; scm.play();
         document.getElementById('screamer').style.display = 'block';
         document.getElementById('screamer').classList.add('shake');
         if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
