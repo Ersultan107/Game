@@ -3,160 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEON MAZE: FINAL</title>
+    <title>NEON MAZE: IPHONE FIX</title>
     <style>
-        /* ВСЕ СТИЛИ ТУТ */
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #050508; overflow: hidden; touch-action: none; font-family: 'Segoe UI', sans-serif; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #050508; overflow: hidden; touch-action: none; font-family: sans-serif; }
         canvas { display: block; }
-        #ui { position: absolute; top: 20px; width: 100%; text-align: center; color: #00f3ff; font-weight: bold; text-shadow: 0 0 10px #00f3ff; pointer-events: none; z-index: 10; letter-spacing: 2px; }
-        
+        #ui { position: absolute; top: 20px; width: 100%; text-align: center; color: #00f3ff; font-weight: bold; text-shadow: 0 0 10px #00f3ff; z-index: 10; }
         #joy-bg { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; border: 1px solid #00f3ff; border-radius: 50%; background: rgba(0, 243, 255, 0.05); z-index: 10; }
         #joy-stick { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: #00f3ff; border-radius: 50%; box-shadow: 0 0 20px #00f3ff; }
-
         #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
         #screamer img { width: 100%; height: 100%; object-fit: cover; }
-
-        .start-btn { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px 40px; background: rgba(0,0,0,0.8); border: 2px solid #00f3ff; color: #00f3ff; font-size: 20px; cursor: pointer; z-index: 100; box-shadow: 0 0 15px #00f3ff; text-transform: uppercase; font-weight: bold; }
+        .start-btn { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px 40px; background: #000; border: 2px solid #00f3ff; color: #00f3ff; font-size: 20px; cursor: pointer; z-index: 100; box-shadow: 0 0 15px #00f3ff; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="ui">LEVEL: <span id="lvl">1</span> / 5</div>
-<button class="start-btn" id="sBtn" onclick="initGame()">START MISSION</button>
+<button class="start-btn" id="sBtn">START TEST</button>
 
 <canvas id="c"></canvas>
-
 <div id="joy-bg"><div id="joy-stick"></div></div>
-
 <div id="screamer"><img src="77307.jpg"></div>
 
-<audio id="bgm" src="bg-music.mp3" loop></audio>
-<audio id="scm" src="scream.mp3"></audio>
+<audio id="bgm" src="bg-music.mp3" loop preload="auto"></audio>
+<audio id="scm" src="scream.mp3" preload="auto"></audio>
 
 <script>
-    /* ВСЯ ЛОГИКА ТУТ */
-    const canvas = document.getElementById('c');
-    const ctx = canvas.getContext('2d');
-    const bgm = document.getElementById('bgm');
-    const scm = document.getElementById('scm');
-    
-    let level = 1;
-    let player = { x: 0, y: 0, r: 12 };
-    let finish = { x: 0, y: 0 };
-    let walls = [];
-    let joy = { x: 0, y: 0, active: false };
-    let cellSize;
+    const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+    const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
+    const sBtn = document.getElementById('sBtn'), screamerImg = document.getElementById('screamer');
+
+    let level = 1, player = { x: 0, y: 0, r: 12 }, finish = { x: 0, y: 0 };
+    let walls = [], joy = { x: 0, y: 0, active: false }, cellSize;
 
     const maps = [
-        [ [1,1,1,1,1,1], [1,2,0,0,0,1], [1,1,1,1,0,1], [1,3,0,0,0,1], [1,1,1,1,1,1] ],
-        [ [1,1,1,1,1,1], [1,2,0,1,3,1], [1,0,0,1,0,1], [1,0,0,0,0,1], [1,1,1,1,1,1] ],
-        [ [1,1,1,1,1,1], [1,3,0,0,0,1], [1,1,1,1,0,1], [1,2,0,0,0,1], [1,1,1,1,1,1] ],
-        [ [1,1,1,1,1,1], [1,2,0,0,1,1], [1,1,1,0,0,1], [1,1,1,1,3,1], [1,1,1,1,1,1] ],
-        [ [1,1,1,3,1,1], [1,0,0,0,0,1], [1,0,1,1,0,1], [1,2,0,0,0,1], [1,1,1,1,1,1] ]
+        [ [1,1,1,1,1], [1,2,0,0,1], [1,1,1,0,1], [1,3,0,0,1], [1,1,1,1,1] ],
+        [ [1,1,1,1,1], [1,2,0,1,1], [1,0,0,0,1], [1,1,1,3,1], [1,1,1,1,1] ],
+        [ [1,1,1,3,1], [1,0,0,0,1], [1,1,1,0,1], [1,2,0,0,1], [1,1,1,1,1] ],
+        [ [1,1,1,1,1], [1,2,0,0,1], [1,0,1,0,1], [1,3,1,1,1], [1,1,1,1,1] ],
+        [ [1,1,3,1,1], [1,0,0,0,1], [1,1,1,0,1], [1,2,0,0,1], [1,1,1,1,1] ]
     ];
 
-    function initGame() {
-        document.getElementById('sBtn').style.display = 'none';
-        bgm.play().catch(e => console.log("Музыка ждет клика"));
+    // ГЛАВНОЕ ИСПРАВЛЕНИЕ ДЛЯ IPHONE
+    sBtn.addEventListener('click', function() {
+        // Активируем оба аудио через один клик
+        bgm.play();
+        
+        // "Пинаем" звук скримера: включаем на секунду без звука и ставим на паузу
+        scm.muted = true;
+        scm.play().then(() => {
+            scm.pause();
+            scm.muted = false;
+            scm.currentTime = 0;
+        });
+
+        sBtn.style.display = 'none';
         setup();
         requestAnimationFrame(loop);
-    }
+    });
 
     function setup() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        // Рассчитываем размер клетки так, чтобы лабиринт влезал в экран
-        cellSize = Math.min(canvas.width / 7, canvas.height / 8);
+        cellSize = Math.min(canvas.width / 6, canvas.height / 7);
         loadMap();
     }
 
     function loadMap() {
         walls = [];
-        const currentMap = maps[level - 1];
-        const mapW = currentMap[0].length * cellSize;
-        const mapH = currentMap.length * cellSize;
-        const offsetX = (canvas.width - mapW) / 2;
-        const offsetY = (canvas.height - mapH) / 2;
-
-        for (let y = 0; y < currentMap.length; y++) {
-            for (let x = 0; x < currentMap[y].length; x++) {
-                let cell = currentMap[y][x];
-                let px = offsetX + x * cellSize;
-                let py = offsetY + y * cellSize;
-                if (cell === 1) walls.push({x: px, y: py, w: cellSize, h: cellSize});
-                if (cell === 2) { player.x = px + cellSize/2; player.y = py + cellSize/2; }
-                if (cell === 3) { finish.x = px + cellSize/2; finish.y = py + cellSize/2; }
+        const m = maps[level - 1];
+        const offX = (canvas.width - m[0].length * cellSize) / 2;
+        const offY = (canvas.height - m.length * cellSize) / 2;
+        for (let y = 0; y < m.length; y++) {
+            for (let x = 0; x < m[y].length; x++) {
+                let pX = offX + x * cellSize, pY = offY + y * cellSize;
+                if (m[y][x] === 1) walls.push({x: pX, y: pY, w: cellSize, h: cellSize});
+                if (m[y][x] === 2) { player.x = pX + cellSize/2; player.y = pY + cellSize/2; }
+                if (m[y][x] === 3) { finish.x = pX + cellSize/2; finish.y = pY + cellSize/2; }
             }
         }
     }
 
-    const stick = document.getElementById('joy-stick');
-    const joyBg = document.getElementById('joy-bg');
-
-    window.addEventListener('touchstart', e => {
-        const t = e.touches[0];
-        const r = joyBg.getBoundingClientRect();
+    const stick = document.getElementById('joy-stick'), joyBg = document.getElementById('joy-bg');
+    window.addEventListener('touchstart', e => { 
+        const t = e.touches[0], r = joyBg.getBoundingClientRect();
         if (Math.hypot(t.clientX - (r.left+50), t.clientY - (r.top+50)) < 60) joy.active = true;
     });
-
     window.addEventListener('touchmove', e => {
         if(!joy.active) return;
-        const t = e.touches[0];
-        const r = joyBg.getBoundingClientRect();
-        const cx = r.left + 50, cy = r.top + 50;
-        let dx = t.clientX - cx, dy = t.clientY - cy;
+        const t = e.touches[0], r = joyBg.getBoundingClientRect();
+        let dx = t.clientX - (r.left+50), dy = t.clientY - (r.top+50);
         const d = Math.hypot(dx, dy);
         if (d > 30) { dx *= 30/d; dy *= 30/d; }
         stick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 7; joy.y = dy / 7;
+        joy.x = dx / 8; joy.y = dy / 8;
     });
-
     window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; stick.style.transform = 'translate(0,0)'; });
 
     function loop() {
         if (joy.active) {
-            let nx = player.x + joy.x;
-            let ny = player.y + joy.y;
-            let hit = false;
-            walls.forEach(w => {
-                if (nx + 10 > w.x && nx - 10 < w.x + w.w && ny + 10 > w.y && ny - 10 < w.y + w.h) hit = true;
-            });
+            let nx = player.x + joy.x, ny = player.y + joy.y, hit = false;
+            walls.forEach(w => { if (nx+10 > w.x && nx-10 < w.x+w.w && ny+10 > w.y && ny-10 < w.y+w.h) hit = true; });
             if (!hit) { player.x = nx; player.y = ny; }
         }
+        ctx.fillStyle = '#050508'; ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = '#1a1a2e'; ctx.shadowBlur = 10; ctx.shadowColor = '#00f3ff';
+        walls.forEach(w => ctx.fillRect(w.x+2, w.y+2, w.w-4, w.h-4));
+        ctx.fillStyle = '#bc13fe'; ctx.shadowBlur = 20; ctx.shadowColor = '#bc13fe';
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, cellSize/4, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#00f3ff'; ctx.shadowBlur = 15; ctx.shadowColor = '#00f3ff';
+        ctx.beginPath(); ctx.arc(player.x, player.y, 10, 0, Math.PI*2); ctx.fill();
 
-        ctx.fillStyle = '#050508';
-        ctx.fillRect(0,0,canvas.width, canvas.height);
-
-        // Рисуем стены
-        ctx.fillStyle = '#1a1a2e';
-        ctx.shadowBlur = 15; ctx.shadowColor = '#00f3ff';
-        walls.forEach(w => ctx.fillRect(w.x + 2, w.y + 2, w.w - 4, w.h - 4));
-
-        // Рисуем финиш (ПОРТАЛ)
-        ctx.fillStyle = '#bc13fe';
-        ctx.shadowBlur = 20; ctx.shadowColor = '#bc13fe';
-        ctx.beginPath();
-        ctx.arc(finish.x, finish.y, cellSize/3.5, 0, Math.PI*2);
-        ctx.fill();
-
-        // Рисуем игрока
-        ctx.fillStyle = '#00f3ff';
-        ctx.shadowBlur = 15; ctx.shadowColor = '#00f3ff';
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, 12, 0, Math.PI*2);
-        ctx.fill();
-
-        if (Math.hypot(player.x - finish.x, player.y - finish.y) < cellSize/2) {
-            if (level < 5) {
-                level++;
-                document.getElementById('lvl').innerText = level;
-                loadMap();
-            } else {
-                document.getElementById('screamer').style.display = 'block';
+        if (Math.hypot(player.x - finish.x, player.y - finish.y) < 25) {
+            if (level < 5) { level++; document.getElementById('lvl').innerText = level; loadMap(); } 
+            else {
+                // ФИНАЛ: Взрываем уши
                 bgm.pause();
+                scm.currentTime = 0;
                 scm.play();
-                if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
-                if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+                screamerImg.style.display = 'block';
+                if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
             }
         }
         requestAnimationFrame(loop);
