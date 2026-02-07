@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neural Link</title>
+    <title>Neural Path</title>
     <style>
         :root { --primary: #ff4d94; --bg: #0a0510; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; touch-action: none; font-family: 'Segoe UI', sans-serif; }
         canvas { display: block; position: absolute; top: 0; left: 0; z-index: 2; }
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 30%, #1a0820 0%, #0a0510 80%); z-index: 1; }
-        #ui { position: absolute; top: 40px; width: 100%; text-align: center; color: #00f3ff; opacity: 0.7; letter-spacing: 4px; z-index: 10; font-size: 13px; text-transform: uppercase; }
+        #ui { position: absolute; top: 40px; width: 100%; text-align: center; color: white; opacity: 0.5; letter-spacing: 4px; z-index: 10; font-size: 11px; text-transform: uppercase; }
         #joy-outer { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); z-index: 10; display: flex; align-items: center; justify-content: center; }
-        #joy-stick { width: 55px; height: 55px; background: white; border-radius: 50%; box-shadow: 0 0 25px var(--primary); transition: transform 0.1s linear; }
+        #joy-stick { width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 20px var(--primary); }
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-start { padding: 16px 60px; background: white; border: none; border-radius: 4px; color: black; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; }
+        .btn-start { padding: 15px 60px; background: white; border: none; border-radius: 2px; color: black; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; }
         #screamer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 9999; }
-        #screamer img { width: 150%; height: 150%; object-fit: cover; position: absolute; top: -25%; left: -25%; }
-        .shake { animation: sh 0.04s infinite; }
-        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-30px, 30px)} 100% {transform: translate(30px, -30px)} }
+        #screamer img { width: 140%; height: 140%; object-fit: cover; position: absolute; top: -20%; left: -20%; }
+        .shake { animation: sh 0.05s infinite; }
+        @keyframes sh { 0% {transform: translate(0,0)} 50% {transform: translate(-20px, 20px)} 100% {transform: translate(20px, -20px)} }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
-<div id="ui">NEURAL LINK: NODE <span id="lvl">1</span> / 5</div>
+<div id="ui">NEURAL LINK: NODE <span id="lvl">1</span> / 4</div>
 <div id="start-screen">
-    <h1 style="color:white; font-weight:100; letter-spacing:10px; margin-bottom:50px; text-align:center;">SYSTEM INITIALIZED</h1>
-    <button class="btn-start" onclick="initGame()">Start Link</button>
+    <h1 style="color:white; font-weight:100; letter-spacing:8px; margin-bottom:40px;">INITIALIZING...</h1>
+    <button class="btn-start" onclick="initGame()">Start</button>
 </div>
 <canvas id="stage"></canvas>
 <div id="joy-outer"><div id="joy-stick"></div></div>
@@ -37,22 +37,32 @@
     const cvs = document.getElementById('stage'), ctx = cvs.getContext('2d');
     const bgm = document.getElementById('bgm'), scm = document.getElementById('scm');
     const stick = document.getElementById('joy-stick');
-    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:8}, finish = {x:0, y:0}, joy = {x:0, y:0, active:false}, cellSize;
+    let level = 1, gameActive = false, walls = [], player = {x:0, y:0, r:7}, finish = {x:0, y:0}, joy = {x:0, y:0, active:false}, cellSize;
 
+    // Карты по мотивам твоих скриншотов
     const maps = [
-        [[1,1,1,1,1],[1,2,0,3,1],[1,1,1,1,1]], // Уровень 1
-        [[1,1,1,1,1,1,1],[1,2,0,0,0,3,1],[1,1,1,1,1,1,1]], // Уровень 2
-        [[1,1,1,1,1,1,1,1,1],[1,2,0,0,1,0,0,3,1],[1,1,1,0,1,0,1,1,1],[1,1,1,1,1,1,1,1,1]], // Уровень 3
-        // Уровень 4 - ИДЕАЛЬНЫЙ ЛАБИРИНТ (ЛОГОВО СКРИМЕРА)
+        // Node 1 (Простой)
+        [[1,1,1,1,1],[1,2,0,3,1],[1,1,1,1,1]],
+        // Node 2 (Как на скрине 77391)
+        [[1,1,1,1,1,1,1,1],[1,2,0,0,1,0,3,1],[1,1,1,0,1,0,1,1],[1,1,1,1,1,1,1,1]],
+        // Node 3 (Как на скрине 77392 - Сложный)
+        [
+            [1,1,1,1,1,1,1,1,1],
+            [1,2,0,0,0,1,0,0,1],
+            [1,1,1,1,0,1,0,1,1],
+            [1,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,3,1,0,1],
+            [1,1,1,1,1,1,1,1,1]
+        ],
+        // Node 4 (ФИНАЛЬНЫЙ ЛАБИРИНТ - ЛОВУШКА)
         [
             [1,1,1,1,1,1,1,1,1,1,1],
-            [1,2,0,0,0,0,1,0,0,0,1],
-            [1,1,1,1,1,0,1,0,1,0,1],
-            [1,0,0,0,0,0,1,0,1,0,1],
-            [1,0,1,1,1,1,1,0,1,0,1],
-            [1,0,0,0,1,0,0,0,1,0,1],
-            [1,1,1,0,1,1,1,1,1,0,1],
-            [1,0,0,0,0,0,0,0,0,3,1],
+            [1,2,0,1,0,0,0,0,0,0,1],
+            [1,1,0,1,0,1,1,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,1,1,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,1,0,3,1],
             [1,1,1,1,1,1,1,1,1,1,1]
         ]
     ];
@@ -90,39 +100,36 @@
         const dist = Math.hypot(dx, dy);
         if(dist > 40) { dx *= 40/dist; dy *= 40/dist; }
         stick.style.transform = `translate(${dx}px, ${dy}px)`;
-        joy.x = dx / 10; joy.y = dy / 10;
+        joy.x = dx / 11; joy.y = dy / 11;
     });
     window.addEventListener('touchend', () => { joy.active = false; joy.x = 0; joy.y = 0; stick.style.transform = 'translate(0,0)'; });
 
     function loop() {
         if(!gameActive) return;
-
-        let nextX = player.x + joy.x;
-        let nextY = player.y + joy.y;
-        let collision = false;
+        let nx = player.x + joy.x, ny = player.y + joy.y;
+        let hit = false;
 
         for(let w of walls) {
-            if(nextX + player.r > w.x && nextX - player.r < w.x + w.w &&
-               nextY + player.r > w.y && nextY - player.r < w.y + w.h) {
-                collision = true;
-                if(level === 4) { gameOver(); return; } // Смерть только на 4 уровне
+            if(nx + 3 > w.x && nx - 3 < w.x + w.w && ny + 3 > w.y && ny - 3 < w.y + w.h) {
+                hit = true;
+                if(level === 4) { gameOver(); return; }
                 break;
             }
         }
 
-        if(!collision) { player.x = nextX; player.y = nextY; }
+        if(!hit) { player.x = nx; player.y = ny; }
 
         ctx.clearRect(0, 0, cvs.width, cvs.height);
         walls.forEach(w => {
             ctx.strokeStyle = 'rgba(255, 77, 148, 0.4)';
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(w.x+2, w.y+2, w.w-4, w.h-4);
+            ctx.lineWidth = 1;
+            ctx.strokeRect(w.x+1, w.y+1, w.w-2, w.h-2);
         });
 
         // Финиш
         ctx.fillStyle = '#ff4d94';
         ctx.shadowBlur = 15; ctx.shadowColor = '#ff4d94';
-        ctx.beginPath(); ctx.arc(finish.x, finish.y, 10, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(finish.x, finish.y, 9, 0, Math.PI*2); ctx.fill();
 
         // Игрок
         ctx.fillStyle = 'white';
