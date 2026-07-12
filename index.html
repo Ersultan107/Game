@@ -1,383 +1,671 @@
-
-
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Туған күнің құтты болсын, әке! 🎉</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); }
-.app { padding: 12px; max-width: 100%; }
-.tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 0.5px solid var(--border); }
-.tab { padding: 8px 14px; font-size: 14px; cursor: pointer; border: none; background: none; color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.tab.active { color: var(--text-accent); border-bottom-color: var(--border-accent); font-weight: 500; }
-.section { display: none; }
-.section.active { display: block; }
-.card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
-.card-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
-.product-row { display: grid; grid-template-columns: 1fr 90px 60px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
-.product-row:last-child { border-bottom: none; }
-.product-name { font-size: 14px; color: var(--text-primary); }
-.product-unit { font-size: 12px; color: var(--text-muted); }
-input[type=number] { width: 100%; padding: 5px 8px; font-size: 14px; border: 0.5px solid var(--border); border-radius: var(--radius); background: var(--surface-1); color: var(--text-primary); text-align: right; }
-input[type=number]:focus { outline: none; border-color: var(--border-accent); }
-.day-selector { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.day-selector label { font-size: 14px; color: var(--text-secondary); }
-.day-selector input[type=date] { padding: 6px 10px; font-size: 14px; border: 0.5px solid var(--border); border-radius: var(--radius); background: var(--surface-1); color: var(--text-primary); }
-.btn { padding: 8px 16px; border-radius: var(--radius); font-size: 14px; cursor: pointer; border: 0.5px solid var(--border-strong); background: var(--surface-2); color: var(--text-primary); }
-.btn:active { transform: scale(0.98); }
-.btn-primary { background: var(--fill-accent); color: var(--on-accent); border-color: var(--fill-accent); }
-.btn-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-.остаток-row { display: grid; grid-template-columns: 1fr 85px 85px 70px; gap: 6px; align-items: center; padding: 5px 0; border-bottom: 0.5px solid var(--border); }
-.остаток-row:last-child { border-bottom: none; }
-.остаток-row .label { font-size: 11px; color: var(--text-muted); text-align: center; }
-.diff-ok { color: var(--text-success); font-size: 13px; text-align: center; }
-.diff-warn { color: var(--text-danger); font-size: 13px; text-align: center; }
-.header-row { display: grid; grid-template-columns: 1fr 85px 85px 70px; gap: 6px; padding: 4px 0 8px; }
-.header-row span { font-size: 11px; color: var(--text-muted); text-align: center; }
-.header-row span:first-child { text-align: left; }
-.zakup-row { display: grid; grid-template-columns: 1fr 85px 85px 60px; gap: 6px; align-items: center; padding: 5px 0; border-bottom: 0.5px solid var(--border); }
-.zakup-row:last-child { border-bottom: none; }
-.zakup-header { display: grid; grid-template-columns: 1fr 85px 85px 60px; gap: 6px; padding: 4px 0 8px; }
-.zakup-header span { font-size: 11px; color: var(--text-muted); text-align: center; }
-.zakup-header span:first-child { text-align: left; }
-.cat-title { font-size: 12px; font-weight: 500; color: var(--text-accent); background: var(--bg-accent); padding: 4px 8px; border-radius: var(--radius); margin: 10px 0 6px; }
-.act-block { font-family: var(--font-mono); font-size: 12px; white-space: pre; overflow-x: auto; background: var(--surface-1); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px; color: var(--text-primary); }
-.summary-badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius); font-size: 12px; }
-.badge-warn { background: var(--bg-warning); color: var(--text-warning); }
-.badge-ok { background: var(--bg-success); color: var(--text-success); }
+  :root{
+    --navy-deep:#12162A;
+    --navy-mid:#1F2745;
+    --navy-soft:#2C3660;
+    --gold:#F2B84B;
+    --gold-soft:#FFD98A;
+    --coral:#E8654F;
+    --sage:#93AE84;
+    --plum:#8C5B7A;
+    --clay:#C97B4A;
+    --paper:#FBF3E7;
+    --paper-dim:#F3E8D8;
+    --ink:#2B2440;
+    --ink-soft:#5B5270;
+    --shadow-warm: 0 20px 50px -20px rgba(43,36,64,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Manrope', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+  .signature-font{font-family:'Caveat', cursive;}
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:0.22em;
+    font-size:0.72rem;
+    font-weight:700;
+    color:var(--gold);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    background: radial-gradient(ellipse at 50% -10%, var(--navy-soft) 0%, var(--navy-mid) 45%, var(--navy-deep) 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:120px 24px 80px;
+    overflow:hidden;
+  }
+  #stars{ position:absolute; inset:0; background:transparent; }
+  .star{
+    position:absolute; width:2px; height:2px;
+    background:#fff; border-radius:50%; opacity:0.7;
+    animation:twinkle 4s ease-in-out infinite;
+  }
+  @keyframes twinkle{ 0%,100%{opacity:0.15;} 50%{opacity:0.9;} }
+
+  #garland{ position:absolute; top:0; left:0; width:100%; height:150px; pointer-events:none; }
+  #garlandWire{ position:absolute; top:0; left:0; width:100%; height:100%; }
+  .bulb{
+    position:absolute; width:14px; height:14px; border-radius:50%;
+    background:#5b5670; transform:translate(-50%,-50%);
+    transition: background 0.5s ease, box-shadow 0.6s ease;
+  }
+  .bulb::after{
+    content:""; position:absolute; top:-4px; left:50%;
+    width:4px; height:6px; background:#3d3a4c;
+    transform:translateX(-50%); border-radius:2px 2px 0 0;
+  }
+  .bulb.lit{
+    background: var(--gold-soft);
+    box-shadow: 0 0 12px 4px rgba(255,217,138,0.85), 0 0 28px 10px rgba(242,184,75,0.4);
+    animation: bulbGlow 2.4s ease-in-out infinite;
+  }
+  .bulb.lit:nth-child(odd){ animation-delay:0.6s; }
+  .bulb.lit:nth-child(3n){ animation-delay:1.1s; }
+  @keyframes bulbGlow{ 0%,100%{ filter:brightness(1); } 50%{ filter:brightness(1.35); } }
+
+  .hero-content{ position:relative; z-index:2; max-width:720px; }
+  .hero-content .eyebrow{ margin-bottom:18px; display:block; }
+  .hero-title{
+    color:var(--paper); font-size:clamp(2.4rem, 6.5vw, 4.6rem);
+    font-weight:600; line-height:1.08; margin-bottom:22px;
+  }
+  .hero-title em{ font-style:italic; color:var(--gold-soft); font-weight:500; }
+  .hero-sub{
+    color:#C9C4DA; font-size:1.05rem; line-height:1.6;
+    max-width:480px; margin:0 auto 48px;
+  }
+
+  .light-switch{
+    display:inline-flex; flex-direction:column; align-items:center; gap:14px;
+    background:none; border:none; cursor:pointer; color:var(--paper);
+    font-family:'Manrope', sans-serif;
+  }
+  .cord{ width:2px; height:36px; background: linear-gradient(to bottom, transparent, #6a6480); }
+  .switch-knob{
+    width:74px; height:74px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 60%, #c98d2a 100%);
+    box-shadow: 0 0 0 6px rgba(242,184,75,0.14), 0 15px 35px -10px rgba(242,184,75,0.6);
+    display:flex; align-items:center; justify-content:center; font-size:1.6rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .light-switch:hover .switch-knob{ transform: scale(1.06); box-shadow: 0 0 0 10px rgba(242,184,75,0.18), 0 18px 40px -8px rgba(242,184,75,0.7); }
+  .light-switch:active .switch-knob{ transform: scale(0.95); }
+  .switch-label{ font-size:0.85rem; letter-spacing:0.05em; color:#C9C4DA; }
+
+  .scroll-hint{
+    position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
+    color:#8a84a0; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase;
+    opacity:0; transition:opacity 0.6s ease;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .hero.unlocked .scroll-hint{ opacity:1; }
+  .scroll-hint span{
+    width:1px; height:30px;
+    background:linear-gradient(to bottom, #8a84a0, transparent);
+    animation:scrollLine 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollLine{
+    0%{transform:scaleY(0); transform-origin:top;}
+    50%{transform:scaleY(1); transform-origin:top;}
+    50.01%{transform-origin:bottom;}
+    100%{transform:scaleY(0); transform-origin:bottom;}
+  }
+
+  .torn-edge{
+    position:absolute; bottom:-1px; left:0; width:100%; height:46px; background:var(--paper);
+    clip-path: polygon(0% 100%, 0% 40%, 3% 60%, 6% 30%, 9% 55%, 12% 35%, 15% 65%, 18% 40%, 21% 58%, 24% 32%, 27% 60%, 30% 38%, 33% 62%, 36% 34%, 39% 58%, 42% 40%, 45% 62%, 48% 36%, 51% 60%, 54% 38%, 57% 64%, 60% 34%, 63% 58%, 66% 40%, 69% 62%, 72% 36%, 75% 60%, 78% 38%, 81% 64%, 84% 34%, 87% 58%, 90% 40%, 93% 62%, 96% 36%, 100% 55%, 100% 100%);
+  }
+
+  /* ---------- ORNAMENT DIVIDER (Kazakh motif) ---------- */
+  .ornament{
+    height:26px;
+    background-image: repeating-linear-gradient(135deg, var(--gold) 0 3px, transparent 3px 16px),
+                       repeating-linear-gradient(45deg, var(--gold) 0 3px, transparent 3px 16px);
+    background-position: 0 0, 0 0;
+    background-size: 16px 16px, 16px 16px;
+    opacity:0.55;
+  }
+  .ornament.on-dark{ opacity:0.35; }
+
+  /* ---------- INTRO ---------- */
+  .intro{ padding:70px 24px 40px; text-align:center; max-width:640px; margin:0 auto; }
+  .intro p{ font-size:1.15rem; line-height:1.8; color:var(--ink-soft); }
+  .intro .big-word{ font-family:'Fraunces', serif; font-size:1.5rem; color:var(--ink); font-style:italic; }
+
+  /* ---------- GALLERY ---------- */
+  .gallery{ position:relative; padding:60px 5vw 80px; }
+  .gallery-heading{ text-align:center; margin-bottom:60px; }
+  .gallery-heading h2{ font-size:clamp(1.8rem,4vw,2.6rem); font-weight:600; }
+  .gallery-hint{ font-size:0.85rem; color:var(--ink-soft); margin-top:10px; }
+  .line-wrap{ position:relative; display:flex; flex-wrap:wrap; justify-content:center; gap:50px 0; padding-top:20px; }
+  .rope{
+    position:absolute; top:-6px; left:0; right:0; height:2px;
+    background:repeating-linear-gradient(to right, #C9BBA3 0 10px, transparent 10px 14px);
+    opacity:0.8;
+  }
+  .photo-pin{
+    width:190px; margin:0 14px; opacity:0;
+    transform:translateY(-24px) rotate(var(--rot,0deg));
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.7,.3,1.3);
+    animation: sway 6s ease-in-out infinite; animation-play-state:paused;
+    cursor:pointer;
+  }
+  .photo-pin.in-view{ opacity:1; transform:translateY(0) rotate(var(--rot,0deg)); animation-play-state:running; }
+  .photo-pin:nth-child(1){ --rot:-6deg; animation-delay:0.1s; }
+  .photo-pin:nth-child(2){ --rot:4deg; animation-delay:0.4s; }
+  .photo-pin:nth-child(3){ --rot:-3deg; animation-delay:0.2s; }
+  .photo-pin:nth-child(4){ --rot:6deg; animation-delay:0.6s; }
+  .photo-pin:nth-child(5){ --rot:-5deg; animation-delay:0.3s; }
+  .photo-pin:nth-child(6){ --rot:3deg; animation-delay:0.5s; }
+  .photo-pin:nth-child(7){ --rot:-4deg; animation-delay:0.15s; }
+  .photo-pin:nth-child(8){ --rot:5deg; animation-delay:0.45s; }
+  .photo-pin:nth-child(9){ --rot:-6deg; animation-delay:0.25s; }
+  .photo-pin:nth-child(10){ --rot:4deg; animation-delay:0.55s; }
+  @keyframes sway{
+    0%,100%{ transform:translateY(0) rotate(calc(var(--rot,0deg) - 1.5deg)); }
+    50%{ transform:translateY(0) rotate(calc(var(--rot,0deg) + 1.5deg)); }
+  }
+  .photo-pin:hover{ transform:translateY(-6px) rotate(0deg) scale(1.04); }
+
+  .clip{
+    width:16px; height:22px;
+    background: linear-gradient(180deg, #D9CBAE, #B9A87F);
+    border-radius:3px; margin:0 auto -4px; position:relative; z-index:2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .polaroid{ background:#fff; padding:10px 10px 26px; box-shadow: var(--shadow-warm); border-radius:2px; }
+  .polaroid img{ width:100%; aspect-ratio: 1/1; object-fit:cover; display:block; background:var(--paper-dim); }
+  .polaroid .cap{ display:block; text-align:center; font-family:'Caveat', cursive; font-size:1.1rem; color:var(--ink-soft); margin-top:8px; }
+  .missing-placeholder{
+    width:100%; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+    background:var(--paper-dim); color:var(--ink-soft); font-family:'Caveat',cursive; font-size:1.15rem; text-align:center; padding:10px;
+  }
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox{
+    position:fixed; inset:0; background:rgba(18,22,42,0.94);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity 0.35s ease;
+    z-index:200; padding:40px;
+  }
+  .lightbox.open{ opacity:1; pointer-events:auto; }
+  .lightbox-inner{
+    max-width:min(80vw, 640px); max-height:80vh; text-align:center;
+    transform:scale(0.9); transition:transform 0.35s cubic-bezier(.2,.7,.3,1.2);
+  }
+  .lightbox.open .lightbox-inner{ transform:scale(1); }
+  .lightbox-inner img{
+    max-width:100%; max-height:70vh; border-radius:4px;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,0.6); background:var(--paper-dim);
+  }
+  .lightbox-cap{ color:var(--gold-soft); font-family:'Caveat',cursive; font-size:1.3rem; margin-top:16px; }
+  .lightbox-close, .lightbox-nav{
+    position:absolute; background:rgba(251,243,231,0.1); color:var(--paper);
+    border:1px solid rgba(251,243,231,0.25); border-radius:50%;
+    width:48px; height:48px; font-size:1.3rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .lightbox-close:hover, .lightbox-nav:hover{ background:rgba(251,243,231,0.22); transform:scale(1.05); }
+  .lightbox-close{ top:24px; right:24px; }
+  .lightbox-nav.prev{ left:20px; top:50%; transform:translateY(-50%); }
+  .lightbox-nav.next{ right:20px; top:50%; transform:translateY(-50%); }
+  @media (max-width:640px){
+    .lightbox-nav.prev{ left:8px; } .lightbox-nav.next{ right:8px; }
+  }
+
+  /* ---------- MESSAGES ---------- */
+  .messages{ background: linear-gradient(180deg, var(--paper) 0%, var(--paper-dim) 100%); padding:60px 5vw 90px; }
+  .messages-heading{ text-align:center; margin-bottom:56px; }
+  .messages-heading h2{ font-size:clamp(1.8rem,4vw,2.6rem); font-weight:600; }
+  .cards-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:32px; max-width:1140px; margin:0 auto;
+  }
+  .card{
+    background:#fff; border-radius:6px; padding:32px 28px 28px;
+    box-shadow: var(--shadow-warm); position:relative; opacity:0;
+    transform:translateY(30px) rotate(var(--tilt,0deg));
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(.2,.7,.3,1.2);
+    border-top:5px solid var(--accent, var(--gold));
+  }
+  .card.in-view{ opacity:1; transform:translateY(0) rotate(var(--tilt,0deg)); }
+  .card:nth-child(1){ --tilt:-1.1deg; --accent:var(--clay); }
+  .card:nth-child(2){ --tilt:0.9deg; --accent:var(--plum); }
+  .card:nth-child(3){ --tilt:-0.7deg; --accent:var(--navy-soft); }
+  .card:nth-child(4){ --tilt:1.3deg; --accent:var(--coral); }
+  .card:nth-child(5){ --tilt:-1.4deg; --accent:var(--gold); }
+  .card:nth-child(6){ --tilt:0.8deg; --accent:var(--sage); }
+  .card .role{ font-size:0.72rem; text-transform:uppercase; letter-spacing:0.16em; font-weight:700; color:var(--accent, var(--gold)); margin-bottom:14px; }
+  .card p{ font-size:1.02rem; line-height:1.75; color:var(--ink); margin:0 0 18px; }
+  .card .sign{ font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-soft); }
+
+  .family-note{
+    max-width:720px; margin:56px auto 0; background:var(--navy-mid); color:var(--paper);
+    border-radius:10px; padding:44px 40px; text-align:center; opacity:0;
+    transform:translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease;
+    box-shadow: 0 30px 60px -25px rgba(31,39,69,0.5);
+  }
+  .family-note.in-view{ opacity:1; transform:translateY(0); }
+  .family-note .role{ color:var(--gold-soft); }
+  .family-note p{ font-size:1.1rem; line-height:1.85; color:#EDE8F5; }
+  .family-note .sign{ color:var(--gold-soft); font-size:1.6rem; }
+
+  /* ---------- FINALE ---------- */
+  .finale{
+    background: radial-gradient(ellipse at 50% 10%, var(--navy-soft), var(--navy-deep));
+    padding:90px 24px 90px; text-align:center; color:var(--paper); position:relative; overflow:hidden;
+  }
+  .finale h2{ font-size:clamp(1.8rem,4vw,2.4rem); font-weight:600; margin-bottom:10px; }
+  .finale .hint{ color:#B7B0CB; font-size:0.95rem; margin-bottom:50px; }
+  .candle-wrap{ cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; background:none; border:none; }
+  .flame{
+    width:14px; height:24px;
+    background: radial-gradient(circle at 50% 70%, #FFF3C4, var(--gold) 55%, var(--coral) 100%);
+    border-radius:50% 50% 50% 50% / 65% 65% 35% 35%; margin-bottom:-2px;
+    animation:flicker 1.6s ease-in-out infinite; transform-origin:bottom center;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  @keyframes flicker{ 0%,100%{ transform:scale(1) rotate(-2deg); } 50%{ transform:scale(1.1) rotate(2deg); } }
+  .wick{ width:2px; height:10px; background:#4a4458; margin-bottom:-2px; }
+  .candle-body{ width:26px; height:70px; background: repeating-linear-gradient(180deg, var(--paper) 0 10px, #EFE2CB 10px 20px); border-radius:3px 3px 1px 1px; }
+  .candle-holder{ width:60px; height:14px; background:var(--gold); border-radius:4px; margin-top:-2px; box-shadow:0 8px 20px -6px rgba(242,184,75,0.5); }
+  .candle-wrap.blown .flame{ opacity:0; transform:scale(0.2); animation:none; }
+  .smoke{ position:absolute; width:6px; height:6px; background:rgba(255,255,255,0.35); border-radius:50%; filter:blur(2px); opacity:0; pointer-events:none; }
+  .candle-wrap.blown .smoke{ animation: smokeRise 1.6s ease-out forwards; }
+  @keyframes smokeRise{ 0%{ opacity:0.6; transform:translateY(0) scale(1); } 100%{ opacity:0; transform:translateY(-60px) scale(2.4); } }
+
+  .finale-signoff{ margin-top:56px; font-family:'Caveat', cursive; font-size:1.7rem; color:var(--gold-soft); }
+  .finale-date{ margin-top:6px; font-size:0.8rem; letter-spacing:0.1em; color:#8a84a0; text-transform:uppercase; }
+
+  /* ---------- MUSIC TOGGLE ---------- */
+  .music-toggle{
+    position:fixed; bottom:22px; right:22px; width:52px; height:52px; border-radius:50%;
+    background:var(--navy-mid); color:var(--gold-soft); border:2px solid rgba(242,184,75,0.4);
+    display:flex; align-items:center; justify-content:center; font-size:1.2rem; cursor:pointer;
+    z-index:50; opacity:0; pointer-events:none; transition: opacity 0.5s ease, transform 0.3s ease;
+    box-shadow: 0 12px 30px -10px rgba(18,22,42,0.6);
+  }
+  .music-toggle.visible{ opacity:1; pointer-events:auto; }
+  .music-toggle:hover{ transform:scale(1.08); }
+  .music-toggle .bars{ display:flex; gap:3px; align-items:flex-end; height:16px; }
+  .music-toggle .bars span{ width:3px; background:var(--gold-soft); border-radius:2px; animation: bar 0.9s ease-in-out infinite; }
+  .music-toggle .bars span:nth-child(1){ height:6px; animation-delay:0s;}
+  .music-toggle .bars span:nth-child(2){ height:14px; animation-delay:0.2s;}
+  .music-toggle .bars span:nth-child(3){ height:9px; animation-delay:0.4s;}
+  .music-toggle.paused .bars span{ animation-play-state:paused; height:5px; }
+  @keyframes bar{ 0%,100%{ height:5px; } 50%{ height:15px; } }
+
+  .confetti-piece{ position:fixed; top:-10px; width:8px; height:14px; z-index:100; pointer-events:none; opacity:0.95; }
+
+  @media (max-width:640px){
+    .photo-pin{ width:130px; margin:0 8px; }
+    .card{ padding:26px 22px 22px; }
+    .hero{ padding:100px 18px 70px; }
+  }
 </style>
+</head>
+<body>
 
-<div class="app">
-<h2 class="sr-only">Учёт продуктов столовой ЗКАП Амиран-Агро</h2>
+<audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
 
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('rashod')"><i class="ti ti-calendar-stats" aria-hidden="true"></i> Расход</button>
-  <button class="tab" onclick="switchTab('ostatki')"><i class="ti ti-scale" aria-hidden="true"></i> Остатки</button>
-  <button class="tab" onclick="switchTab('zakupka')"><i class="ti ti-shopping-cart" aria-hidden="true"></i> Закупка</button>
-  <button class="tab" onclick="switchTab('akt')"><i class="ti ti-file-text" aria-hidden="true"></i> Акт</button>
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div id="stars"></div>
+  <div id="garland">
+    <svg id="garlandWire" preserveAspectRatio="none"><polyline id="wireLine" fill="none" stroke="#4a4458" stroke-width="1.5" /></svg>
+  </div>
+
+  <div class="hero-content">
+    <span class="eyebrow">Сүйікті әкемізге</span>
+    <h1 class="hero-title">Туған күнің<br>құтты болсын, <em>әкетайым!</em></h1>
+    <p class="hero-sub">Бұл бет — бүкіл отбасыңнан саған арналған сый. Мұнда біздің суреттеріміз бен жүрек сөздеріміз бар. Гирляндыны жағу үшін төмендегі түймені бас.</p>
+
+    <button class="light-switch" id="unlockBtn" aria-label="Гирляндыны жағып, құттықтауды бастау">
+      <div class="cord"></div>
+      <div class="switch-knob">💡</div>
+      <span class="switch-label">Гирляндыны жағу</span>
+    </button>
+  </div>
+
+  <div class="scroll-hint"><span></span>төмен қарай сырғыт</div>
+  <div class="torn-edge"></div>
+</section>
+
+<!-- INTRO -->
+<section class="intro">
+  <p>Бүгін — сенің <span class="big-word">туған күнің</span>. Өзің құрған және әрдайым қорғап келе жатқан отбасың бүгін саған алғыс айтқысы келеді. Қамқорлығың үшін, шыдамдылығың үшін, жай ғана біздің қасымызда болғаның үшін — рахмет.</p>
+</section>
+
+<div class="ornament"></div>
+
+<!-- GALLERY -->
+<section class="gallery">
+  <div class="gallery-heading">
+    <span class="eyebrow">Біз сақтап жүрген сәттер</span>
+    <h2>Біздің суреттеріміз</h2>
+    <div class="gallery-hint">үлкейту үшін суретке бас</div>
+  </div>
+  <div class="line-wrap" id="galleryWrap">
+    <div class="rope"></div>
+    <div class="photo-pin" data-index="0"><div class="clip"></div><div class="polaroid"><img src="photo1.jpg" alt="Сурет 1" onerror="markMissing(this,1)"><span class="cap">01</span></div></div>
+    <div class="photo-pin" data-index="1"><div class="clip"></div><div class="polaroid"><img src="photo2.jpg" alt="Сурет 2" onerror="markMissing(this,2)"><span class="cap">02</span></div></div>
+    <div class="photo-pin" data-index="2"><div class="clip"></div><div class="polaroid"><img src="photo3.jpg" alt="Сурет 3" onerror="markMissing(this,3)"><span class="cap">03</span></div></div>
+    <div class="photo-pin" data-index="3"><div class="clip"></div><div class="polaroid"><img src="photo4.jpg" alt="Сурет 4" onerror="markMissing(this,4)"><span class="cap">04</span></div></div>
+    <div class="photo-pin" data-index="4"><div class="clip"></div><div class="polaroid"><img src="photo5.jpg" alt="Сурет 5" onerror="markMissing(this,5)"><span class="cap">05</span></div></div>
+    <div class="photo-pin" data-index="5"><div class="clip"></div><div class="polaroid"><img src="photo6.jpg" alt="Сурет 6" onerror="markMissing(this,6)"><span class="cap">06</span></div></div>
+    <div class="photo-pin" data-index="6"><div class="clip"></div><div class="polaroid"><img src="photo7.jpg" alt="Сурет 7" onerror="markMissing(this,7)"><span class="cap">07</span></div></div>
+    <div class="photo-pin" data-index="7"><div class="clip"></div><div class="polaroid"><img src="photo8.jpg" alt="Сурет 8" onerror="markMissing(this,8)"><span class="cap">08</span></div></div>
+    <div class="photo-pin" data-index="8"><div class="clip"></div><div class="polaroid"><img src="photo9.jpg" alt="Сурет 9" onerror="markMissing(this,9)"><span class="cap">09</span></div></div>
+    <div class="photo-pin" data-index="9"><div class="clip"></div><div class="polaroid"><img src="photo10.jpg" alt="Сурет 10" onerror="markMissing(this,10)"><span class="cap">10</span></div></div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lbClose" aria-label="Жабу">✕</button>
+  <button class="lightbox-nav prev" id="lbPrev" aria-label="Алдыңғы сурет">‹</button>
+  <div class="lightbox-inner">
+    <img id="lbImg" src="" alt="">
+    <div class="lightbox-cap" id="lbCap"></div>
+  </div>
+  <button class="lightbox-nav next" id="lbNext" aria-label="Келесі сурет">›</button>
 </div>
 
-<div id="rashod" class="section active">
-  <div class="day-selector">
-    <label>Дата:</label>
-    <input type="date" id="rashod-date" />
-    <button class="btn" onclick="saveRashod()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Сохранить</button>
+<div class="ornament"></div>
+
+<!-- MESSAGES -->
+<section class="messages">
+  <div class="messages-heading">
+    <span class="eyebrow">Әрқайсымыздан</span>
+    <h2>Саған айтқымыз келген сөздер</h2>
   </div>
 
-  <div class="card">
-    <div class="cat-title">Продукты</div>
-    <div id="rashod-products"></div>
-  </div>
-  <div class="card">
-    <div class="cat-title">Овощи</div>
-    <div id="rashod-ovoshi"></div>
-  </div>
-  <div class="card">
-    <div class="cat-title">Моющие</div>
-    <div id="rashod-moyuschie"></div>
-  </div>
-  <div id="rashod-saved" style="margin-top:10px;font-size:13px;color:var(--text-success);display:none;"><i class="ti ti-check"></i> Расход сохранён!</div>
-</div>
-
-<div id="ostatki" class="section">
-  <div class="card">
-    <div class="card-title">Остатки по тетради vs фактические</div>
-    <div class="header-row">
-      <span>Наименование</span>
-      <span>По тетради</span>
-      <span>Факт (весы)</span>
-      <span>Разница</span>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="role">Әжеден — Жарқынай</div>
+      <p>Балам, сен — менің мақтанышымсың. Сені кішкентайыңнан бүгінгі күнге дейін қарап, бақытты болдым. Ұрпағыма қамқор, жанұяңа сүйіспеншілікпен қарайтын ұлым болғаныңа шексіз ризамын. Туған күнің құтты болсын, айналайын!</p>
+      <div class="sign">— анаң</div>
     </div>
-    <div class="cat-title">Продукты</div>
-    <div id="ostatki-products"></div>
-    <div class="cat-title">Овощи</div>
-    <div id="ostatki-ovoshi"></div>
-    <div class="cat-title">Моющие</div>
-    <div id="ostatki-moyuschie"></div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="saveOstatki()"><i class="ti ti-device-floppy"></i> Сохранить остатки</button>
-  </div>
-  <div id="ostatki-saved" style="margin-top:10px;font-size:13px;color:var(--text-success);display:none;"><i class="ti ti-check"></i> Остатки сохранены!</div>
-</div>
 
-<div id="zakupka" class="section">
-  <div class="day-selector">
-    <label>Дата закупки:</label>
-    <input type="date" id="zakup-date" />
-  </div>
-  <div class="card">
-    <div class="zakup-header">
-      <span>Наименование</span>
-      <span>Потребность</span>
-      <span>Фак. приход</span>
-      <span>Ед. изм.</span>
+    <div class="card">
+      <div class="role">Анадан — Гүлнұр</div>
+      <p>Сүйіктім, сенімен бірге өткен әрбір жыл үшін тағдырыма алғыс айтамын. Сен — осы отбасының тірегі, біздің сенімді панамыз. Туған күнің құтты болсын, жаным. Сенің жарың болғаныма қуаныштымын.</p>
+      <div class="sign">— жарың</div>
     </div>
-    <div class="cat-title">Продукты</div>
-    <div id="zakup-products"></div>
-    <div class="cat-title">Овощи</div>
-    <div id="zakup-ovoshi"></div>
-    <div class="cat-title">Моющие</div>
-    <div id="zakup-moyuschie"></div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="saveZakup()"><i class="ti ti-device-floppy"></i> Сохранить закупку</button>
-  </div>
-  <div id="zakup-saved" style="margin-top:10px;font-size:13px;color:var(--text-success);display:none;"><i class="ti ti-check"></i> Закупка сохранена!</div>
-</div>
 
-<div id="akt" class="section">
-  <div class="btn-row" style="margin-bottom:14px;">
-    <button class="btn btn-primary" onclick="generateAkt()"><i class="ti ti-file-text"></i> Сформировать акт</button>
-    <button class="btn" onclick="copyAkt()"><i class="ti ti-copy"></i> Копировать</button>
+    <div class="card">
+      <div class="role">Ұлыңнан — Ерсұлтан</div>
+      <p>Әке, мен сені бақылап өстім — қалай еңбек ететініңді, бізге қалай қамқор болатыныңды, ауыр болса да ешқашан шағымданбайтыныңды. Менде бар барлық жақсы қасиет — көбіне сенің арқаңда. Мерекеңмен, әке. Сенің ұлың болғаныма мақтанамын.</p>
+      <div class="sign">— ұлың</div>
+    </div>
+
+    <div class="card">
+      <div class="role">Қызыңнан — Әкерке</div>
+      <p>Әкетайым, сен — ең жақсысың! Мені әрдайым қорғап, қолдап, тіпті өзіме сенбей қалған кездерімде де сенгенің үшін рахмет. Саған біздің бәрімізге сыйлайтын бақытыңнан да көп бақыт тілеймін.</p>
+      <div class="sign">— қызың Әкерке</div>
+    </div>
+
+    <div class="card">
+      <div class="role">Қызыңнан — Айсезім</div>
+      <p>Әкетайым, сен — ең мейірімді әрі күшті әкесің! Менімен ойнағаның және әрдайым қасымда болғаның үшін рахмет. Мен де сен сияқты болғым келеді. Туған күніңмен, сені жақсы көремін!</p>
+      <div class="sign">— қызың Айсезім</div>
+    </div>
+
+    <div class="card">
+      <div class="role">Ұлыңнан — Жансейіт</div>
+      <p>Әке, сен ең күштісің әрі ең мейірімдісің! Менімен ойнағаның және әрдайым қасымда болғаның үшін рахмет. Мен де өскенде сендей боламын. Туған күніңмен, сені жақсы көремін!</p>
+      <div class="sign">— ұлың Жансейіт</div>
+    </div>
   </div>
-  <div id="akt-content"></div>
-</div>
-</div>
+
+  <div class="family-note">
+    <div class="role">Бүкіл отбасыдан</div>
+    <p>Қымбатты әкеміз, жарым, батырымыз — бүгін сенің күнің. Сен құрған және қорғап келе жатқан осы үлкен отбасы бүгін жүрегімен қасыңда. Бізге арнаған әрбір күнің үшін рахмет. Біз сені сөзбен айтып жеткізе алмайтындай жақсы көреміз.</p>
+    <div class="sign">Сүйіспеншілікпен, отбасың ❤</div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section class="finale">
+  <h2>Тілек тіле, әке</h2>
+  <div class="hint">шырақты үрлеу үшін бас</div>
+
+  <button class="candle-wrap" id="candle" aria-label="Шырақты үрлеу">
+    <div class="flame" id="flame"></div>
+    <div class="wick"></div>
+    <div class="candle-body"></div>
+    <div class="candle-holder"></div>
+  </button>
+
+  <div class="finale-signoff">сүйіспеншілікпен, отбасың</div>
+  <div class="finale-date" id="todayDate"></div>
+</section>
+
+<button class="music-toggle" id="musicToggle" aria-label="Музыканы қосу/өшіру">
+  <div class="bars"><span></span><span></span><span></span></div>
+</button>
 
 <script>
-const PRODUCTS = [
-  {name:'Рис "Камолино"', unit:'кг'},
-  {name:'Горох', unit:'кг'},
-  {name:'Чечевица', unit:'кг'},
-  {name:'Манная крупа', unit:'пачек'},
-  {name:'Гречневая крупа', unit:'кг'},
-  {name:'Перловая крупа', unit:'кг'},
-  {name:'Пшено', unit:'пачек'},
-  {name:'Макароны (Крупные, рожки)', unit:'кг'},
-  {name:'Спагетти', unit:'кг'},
-  {name:'Манпар (жайма)', unit:'пачек'},
-  {name:'Кеспе тонкая', unit:'пачек'},
-  {name:'Мясо (говядина)', unit:'кг'},
-  {name:'Суп набор с костями (говядина)', unit:'кг'},
-  {name:'Окорочка', unit:'кг'},
-  {name:'Яйца', unit:'шт'},
-  {name:'Сосиска в упаковке', unit:'шт'},
-  {name:'Масло растительное 5л', unit:'л'},
-  {name:'Масло сливочное/спред', unit:'пачек'},
-  {name:'Соленые огурцы', unit:'банка'},
-  {name:'Томатная паста', unit:'банка'},
-  {name:'Майонез', unit:'шт'},
-  {name:'Кетчуп', unit:'шт'},
-  {name:'Мука', unit:'кг'},
-  {name:'Чай 500гр', unit:'пачек'},
-  {name:'Чай 250гр', unit:'пачек'},
-  {name:'Сахар', unit:'кг'},
-  {name:'Соль', unit:'кг'},
-  {name:'Перец красный молотый', unit:'пачек'},
-  {name:'Перец черный молотый', unit:'пачек'},
-  {name:'Уксус', unit:'бут'},
-  {name:'Дрожжи', unit:'пачек'},
-  {name:'Пищевая сода', unit:'пачек'},
-  {name:'Лавровый лист', unit:'пачек'},
-];
-const OVOSHI = [
-  {name:'Картофель', unit:'кг'},
-  {name:'Капуста белокочанная', unit:'кг'},
-  {name:'Морковь', unit:'кг'},
-  {name:'Редька зеленая', unit:'кг'},
-  {name:'Свекла', unit:'кг'},
-  {name:'Укроп', unit:'кг'},
-  {name:'Чеснок', unit:'кг'},
-  {name:'Перец болгарский', unit:'кг'},
-  {name:'Лук репчатый', unit:'кг'},
-];
-const MOYUSCHIE = [
-  {name:'Фейри 900мл', unit:'шт'},
-  {name:'Мыло хозяйственное', unit:'шт'},
-  {name:'Салфетки бумажные', unit:'упак'},
-  {name:'Белизна', unit:'шт'},
-  {name:'Тряпка', unit:'шт'},
-  {name:'Туалетная бумага', unit:'упак'},
-  {name:'Пакет 60кг 29шт', unit:'упак'},
-  {name:'Пакет майка-бомба', unit:'шт'},
-  {name:'Губка', unit:'упак'},
-  {name:'Стиральный порошок 2кг', unit:'кг'},
-  {name:'Металлическая мочалка', unit:'шт'},
-  {name:'Спички', unit:'упак'},
-  {name:'Дихлофос', unit:'шт'},
-  {name:'Комет (большой)', unit:'шт'},
-  {name:'Одноразовый стакан', unit:'шт'},
-];
+  // ---------- STARS ----------
+  const starsWrap = document.getElementById('stars');
+  for(let i=0;i<70;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = Math.random()*90 + '%';
+    s.style.animationDelay = (Math.random()*4) + 's';
+    s.style.width = s.style.height = (Math.random()*1.5+1) + 'px';
+    starsWrap.appendChild(s);
+  }
 
-let state = {rashod:{}, ostatki:{fact:{}}, zakupka:{}};
-try { let s = localStorage.getItem('farm_state'); if(s) state = JSON.parse(s); } catch(e){}
-function save() { try { localStorage.setItem('farm_state', JSON.stringify(state)); } catch(e){} }
+  // ---------- GARLAND ----------
+  const garland = document.getElementById('garland');
+  const wireLine = document.getElementById('wireLine');
+  const bulbCount = 13;
+  const bulbs = [];
 
-function today() { return new Date().toISOString().slice(0,10); }
+  function layoutGarland(){
+    const width = garland.offsetWidth;
+    const height = 150;
+    const svg = document.getElementById('garlandWire');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
 
-function initDates() {
-  document.getElementById('rashod-date').value = today();
-  document.getElementById('zakup-date').value = today();
-}
+    bulbs.forEach(b=>b.remove());
+    bulbs.length = 0;
 
-function makeRashodRow(item, cat) {
-  const key = cat+'|'+item.name;
-  const date = document.getElementById('rashod-date')?.value || today();
-  const val = (state.rashod[date] && state.rashod[date][key]) || '';
-  return `<div class="product-row">
-    <div><div class="product-name">${item.name}</div><div class="product-unit">${item.unit}</div></div>
-    <input type="number" min="0" step="0.001" placeholder="0" value="${val}" id="r_${cat}_${item.name.replace(/[^а-яa-z0-9]/gi,'_')}" oninput="storeRashod('${date}','${key}',this.value)" />
-    <div class="product-unit" style="text-align:right">${item.unit}</div>
-  </div>`;
-}
+    let points = [];
+    const segments = 3;
+    const segWidth = width/segments;
+    for(let seg=0; seg<segments; seg++){
+      const startX = seg*segWidth;
+      for(let i=0;i<=bulbCount/segments;i++){
+        const t = i/(bulbCount/segments);
+        const x = startX + t*segWidth;
+        const sag = Math.sin(t*Math.PI) * 55;
+        const y = 20 + sag;
+        points.push([x,y]);
+      }
+    }
+    wireLine.setAttribute('points', points.map(p=>p.join(',')).join(' '));
 
-function storeRashod(date, key, val) {
-  if(!state.rashod[date]) state.rashod[date] = {};
-  state.rashod[date][key] = val;
-}
-
-function renderRashod() {
-  document.getElementById('rashod-products').innerHTML = PRODUCTS.map(p=>makeRashodRow(p,'p')).join('');
-  document.getElementById('rashod-ovoshi').innerHTML = OVOSHI.map(p=>makeRashodRow(p,'o')).join('');
-  document.getElementById('rashod-moyuschie').innerHTML = MOYUSCHIE.map(p=>makeRashodRow(p,'m')).join('');
-}
-
-function saveRashod() {
-  save();
-  const el = document.getElementById('rashod-saved');
-  el.style.display='block';
-  setTimeout(()=>el.style.display='none',2000);
-}
-
-function calcOstatokPoTetrad(cat, item) {
-  const key = cat+'|'+item.name;
-  let total = 0;
-  Object.keys(state.rashod||{}).forEach(date => {
-    const v = parseFloat((state.rashod[date]||{})[key]);
-    if(!isNaN(v)) total += v;
-  });
-  const zKey = cat+'|'+item.name;
-  const prihod = parseFloat((state.zakupka||{})[zKey+'_prihod']) || 0;
-  return prihod - total;
-}
-
-function makeOstatokRow(item, cat) {
-  const key = cat+'|'+item.name;
-  const po_tetr = calcOstatokPoTetrad(cat, item);
-  const fact = parseFloat((state.ostatki.fact||{})[key]) || '';
-  const diff = fact !== '' ? (fact - po_tetr) : null;
-  const diffStr = diff === null ? '—' : (diff >= 0 ? `<span class="diff-ok">+${diff.toFixed(2)}</span>` : `<span class="diff-warn">${diff.toFixed(2)}</span>`);
-  return `<div class="остаток-row">
-    <div><div class="product-name" style="font-size:13px">${item.name}</div><div class="product-unit">${item.unit}</div></div>
-    <div style="text-align:center;font-size:13px">${isNaN(po_tetr)?'0':po_tetr.toFixed(2)}</div>
-    <input type="number" min="0" step="0.001" placeholder="0" value="${fact}" style="width:100%;font-size:13px" onchange="state.ostatki.fact['${key}']=this.value;renderOstatki()" />
-    <div>${diffStr}</div>
-  </div>`;
-}
-
-function renderOstatki() {
-  document.getElementById('ostatki-products').innerHTML = PRODUCTS.map(p=>makeOstatokRow(p,'p')).join('');
-  document.getElementById('ostatki-ovoshi').innerHTML = OVOSHI.map(p=>makeOstatokRow(p,'o')).join('');
-  document.getElementById('ostatki-moyuschie').innerHTML = MOYUSCHIE.map(p=>makeOstatokRow(p,'m')).join('');
-}
-
-function saveOstatki() {
-  save();
-  const el = document.getElementById('ostatki-saved');
-  el.style.display='block';
-  setTimeout(()=>el.style.display='none',2000);
-}
-
-function makeZakupRow(item, cat) {
-  const key = cat+'|'+item.name;
-  const potr = (state.zakupka||{})[key+'_potr'] || '';
-  const prih = (state.zakupka||{})[key+'_prihod'] || '';
-  return `<div class="zakup-row">
-    <div><div class="product-name" style="font-size:13px">${item.name}</div></div>
-    <input type="number" min="0" step="0.001" placeholder="0" value="${potr}" style="font-size:13px" onchange="if(!state.zakupka)state.zakupka={};state.zakupka['${key}_potr']=this.value" />
-    <input type="number" min="0" step="0.001" placeholder="0" value="${prih}" style="font-size:13px" onchange="if(!state.zakupka)state.zakupka={};state.zakupka['${key}_prihod']=this.value" />
-    <div class="product-unit" style="text-align:center">${item.unit}</div>
-  </div>`;
-}
-
-function renderZakup() {
-  document.getElementById('zakup-products').innerHTML = PRODUCTS.map(p=>makeZakupRow(p,'p')).join('');
-  document.getElementById('zakup-ovoshi').innerHTML = OVOSHI.map(p=>makeZakupRow(p,'o')).join('');
-  document.getElementById('zakup-moyuschie').innerHTML = MOYUSCHIE.map(p=>makeZakupRow(p,'m')).join('');
-}
-
-function saveZakup() {
-  save();
-  const el = document.getElementById('zakup-saved');
-  el.style.display='block';
-  setTimeout(()=>el.style.display='none',2000);
-}
-
-function generateAkt() {
-  const date = today();
-  let lines = [];
-  lines.push('АКТ ИНВЕНТАРИЗАЦИИ');
-  lines.push('Столовая ЗКАП Амиран-Агро');
-  lines.push('Дата: ' + date);
-  lines.push('');
-  lines.push('═══════════════════════════════════════════════');
-  lines.push('РАСХОД ПО ДНЯМ:');
-  lines.push('');
-  const dates = Object.keys(state.rashod||{}).sort();
-  if(dates.length === 0) { lines.push('(нет данных)'); }
-  dates.forEach(d => {
-    lines.push('  ' + d + ':');
-    const ALL = [{list:PRODUCTS,cat:'p'},{list:OVOSHI,cat:'o'},{list:MOYUSCHIE,cat:'m'}];
-    ALL.forEach(({list,cat}) => {
-      list.forEach(item => {
-        const key = cat+'|'+item.name;
-        const v = (state.rashod[d]||{})[key];
-        if(v && parseFloat(v) > 0) lines.push(`    ${item.name}: ${v} ${item.unit}`);
-      });
+    points.forEach((p, idx)=>{
+      if(idx % Math.ceil(points.length/bulbCount) !== 0) return;
+      const b = document.createElement('div');
+      b.className = 'bulb';
+      b.style.left = p[0] + 'px';
+      b.style.top = (p[1]+6) + 'px';
+      garland.appendChild(b);
+      bulbs.push(b);
     });
+  }
+  layoutGarland();
+  window.addEventListener('resize', layoutGarland);
+
+  // ---------- UNLOCK / MUSIC ----------
+  const unlockBtn = document.getElementById('unlockBtn');
+  const heroEl = document.getElementById('hero');
+  const music = document.getElementById('bgMusic');
+  const musicToggle = document.getElementById('musicToggle');
+  let unlocked = false;
+
+  unlockBtn.addEventListener('click', () => {
+    if(unlocked) return;
+    unlocked = true;
+    heroEl.classList.add('unlocked');
+
+    bulbs.forEach((b,i)=>{ setTimeout(()=> b.classList.add('lit'), i*80); });
+
+    try{
+      music.volume = 0.55;
+      const p = music.play();
+      if(p && p.catch) p.catch(()=>{});
+    }catch(e){}
+
+    musicToggle.classList.add('visible');
+
+    setTimeout(()=>{ document.querySelector('.intro').scrollIntoView({behavior:'smooth'}); }, 900);
   });
-  lines.push('');
-  lines.push('═══════════════════════════════════════════════');
-  lines.push('ОСТАТКИ:');
-  lines.push('');
-  lines.push(pad('Наименование',28) + pad('По тетр.',10) + pad('Факт',10) + 'Разница');
-  lines.push('─'.repeat(55));
-  const ALLCAT = [{list:PRODUCTS,cat:'p',label:'ПРОДУКТЫ'},{list:OVOSHI,cat:'o',label:'ОВОЩИ'},{list:MOYUSCHIE,cat:'m',label:'МОЮЩИЕ'}];
-  ALLCAT.forEach(({list,cat,label}) => {
-    lines.push(label + ':');
-    list.forEach(item => {
-      const key = cat+'|'+item.name;
-      const po = calcOstatokPoTetrad(cat, item);
-      const fact = parseFloat((state.ostatki.fact||{})[key]);
-      const diff = !isNaN(fact) ? (fact - po) : null;
-      const diffStr = diff === null ? '—' : (diff>=0?'+':'')+diff.toFixed(2);
-      lines.push(pad(item.name,28) + pad(isNaN(po)?'0':po.toFixed(2),10) + pad(!isNaN(fact)?fact.toFixed(2):'—',10) + diffStr);
+
+  musicToggle.addEventListener('click', ()=>{
+    if(music.paused){ music.play().catch(()=>{}); musicToggle.classList.remove('paused'); }
+    else { music.pause(); musicToggle.classList.add('paused'); }
+  });
+
+  // ---------- MISSING PHOTO FALLBACK ----------
+  const photoLoaded = {};
+  function markMissing(img, n){
+    photoLoaded[n] = false;
+    img.style.display = 'none';
+    const ph = document.createElement('div');
+    ph.className = 'missing-placeholder';
+    ph.textContent = 'сурет ' + n + ' жақында осында';
+    img.insertAdjacentElement('beforebegin', ph);
+  }
+  function markLoaded(n){ photoLoaded[n] = true; }
+  document.querySelectorAll('.polaroid img').forEach((img, i)=>{
+    img.addEventListener('load', ()=> markLoaded(i+1));
+  });
+
+  // ---------- SCROLL REVEAL ----------
+  const revealTargets = document.querySelectorAll('.photo-pin, .card, .family-note');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); }
     });
+  }, {threshold:0.2});
+  revealTargets.forEach(t=>io.observe(t));
+
+  // ---------- LIGHTBOX ----------
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCap = document.getElementById('lbCap');
+  const lbClose = document.getElementById('lbClose');
+  const lbPrev = document.getElementById('lbPrev');
+  const lbNext = document.getElementById('lbNext');
+  const pins = Array.from(document.querySelectorAll('.photo-pin'));
+  let currentIndex = 0;
+
+  function openLightbox(index){
+    currentIndex = (index + pins.length) % pins.length;
+    const n = currentIndex + 1;
+    if(photoLoaded[n]){
+      lbImg.style.display = 'block';
+      lbImg.src = 'photo' + n + '.jpg';
+    } else {
+      lbImg.style.display = 'none';
+    }
+    lbCap.textContent = 'Сурет ' + String(n).padStart(2,'0');
+    lightbox.classList.add('open');
+  }
+  function closeLightbox(){ lightbox.classList.remove('open'); }
+
+  pins.forEach((pin)=>{
+    pin.addEventListener('click', ()=> openLightbox(parseInt(pin.dataset.index,10)));
   });
-  lines.push('');
-  lines.push('═══════════════════════════════════════════════');
-  lines.push('ЗАКУПКА:');
-  lines.push('');
-  lines.push(pad('Наименование',28) + pad('Потреб.',10) + pad('Приход',10) + 'Ед.');
-  lines.push('─'.repeat(55));
-  ALLCAT.forEach(({list,cat,label}) => {
-    lines.push(label + ':');
-    list.forEach(item => {
-      const key = cat+'|'+item.name;
-      const potr = (state.zakupka||{})[key+'_potr'] || '—';
-      const prih = (state.zakupka||{})[key+'_prihod'] || '—';
-      if(potr !== '—' || prih !== '—') lines.push(pad(item.name,28) + pad(potr,10) + pad(prih,10) + item.unit);
-    });
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+  lbPrev.addEventListener('click', ()=> openLightbox(currentIndex-1));
+  lbNext.addEventListener('click', ()=> openLightbox(currentIndex+1));
+  document.addEventListener('keydown', (e)=>{
+    if(!lightbox.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === 'ArrowLeft') openLightbox(currentIndex-1);
+    if(e.key === 'ArrowRight') openLightbox(currentIndex+1);
   });
-  document.getElementById('akt-content').innerHTML = `<div class="act-block">${lines.join('\n')}</div>`;
-}
 
-function pad(str, len) { str = String(str); return str.length >= len ? str.slice(0,len-1)+' ' : str + ' '.repeat(len-str.length); }
+  // ---------- CANDLE + CONFETTI ----------
+  const candle = document.getElementById('candle');
+  let blown = false;
+  candle.addEventListener('click', ()=>{
+    if(blown) return;
+    blown = true;
+    candle.classList.add('blown');
 
-function copyAkt() {
-  const el = document.getElementById('akt-content');
-  if(!el.textContent) { generateAkt(); }
-  navigator.clipboard.writeText(el.textContent).catch(()=>{});
-}
+    for(let i=0;i<3;i++){
+      const smoke = document.createElement('div');
+      smoke.className='smoke';
+      smoke.style.left = (i*4-4) + 'px';
+      smoke.style.top = '0px';
+      smoke.style.animationDelay = (i*0.15)+'s';
+      candle.appendChild(smoke);
+    }
+    launchConfetti();
+  });
 
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(name).classList.add('active');
-  event.target.closest('.tab').classList.add('active');
-  if(name==='ostatki') renderOstatki();
-  if(name==='zakupka') renderZakup();
-  if(name==='rashod') renderRashod();
-}
+  function launchConfetti(){
+    const colors = ['#F2B84B','#E8654F','#93AE84','#FFD98A','#FBF3E7','#8C5B7A'];
+    const count = 90;
+    for(let i=0;i<count;i++){
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random()*100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+      const duration = 2.2 + Math.random()*1.8;
+      const rotation = (Math.random()*720-360);
+      piece.animate([
+        { transform:`translateY(0) rotate(0deg)`, opacity:1 },
+        { transform:`translateY(${window.innerHeight+40}px) rotate(${rotation}deg)`, opacity:0.9 }
+      ], { duration: duration*1000, easing:'cubic-bezier(.3,.6,.4,1)' });
+      document.body.appendChild(piece);
+      setTimeout(()=>piece.remove(), duration*1000+100);
+    }
+  }
 
-initDates();
-renderRashod();
+  // ---------- DATE ----------
+  document.getElementById('todayDate').textContent =
+    new Date().toLocaleDateString('kk-KZ', { day:'numeric', month:'long', year:'numeric' });
 </script>
+
+</body>
+</html>
